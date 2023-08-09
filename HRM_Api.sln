@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BussinessObjects", "BussinessObjects\BussinessObjects.csproj", "{AA52DC85-1BDE-44E2-950E-4696C9071163}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HumanResourceapi", "HumanResourceapi\HumanResourceapi.csproj", "{843C4BED-CF5B-4FC1-A13A-F8C5C6AD4076}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA52DC85-1BDE-44E2-950E-4696C9071163}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA52DC85-1BDE-44E2-950E-4696C9071163}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA52DC85-1BDE-44E2-950E-4696C9071163}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA52DC85-1BDE-44E2-950E-4696C9071163}.Release|Any CPU.Build.0 = Release|Any CPU
+		{843C4BED-CF5B-4FC1-A13A-F8C5C6AD4076}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{843C4BED-CF5B-4FC1-A13A-F8C5C6AD4076}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{843C4BED-CF5B-4FC1-A13A-F8C5C6AD4076}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{843C4BED-CF5B-4FC1-A13A-F8C5C6AD4076}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {00FC1CAC-5416-4305-899F-45CEC472488B}
+	EndGlobalSection
+EndGlobal
