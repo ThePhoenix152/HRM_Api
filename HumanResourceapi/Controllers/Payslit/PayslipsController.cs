@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BussinessObjects.Models;
+using HumanResourceapi.Models;
 
-namespace HumanResourceapi.Controllers.Paylit
+namespace HumanResourceapi.Controllers.Payslit
 {
     [Route("api/[controller]")]
     [ApiController]

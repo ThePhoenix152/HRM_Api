@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace BussinessObjects.Models;
+namespace HumanResourceapi.Models;
 
 public partial class SwpProjectContext : DbContext
 {

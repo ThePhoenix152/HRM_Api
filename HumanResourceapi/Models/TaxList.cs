@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BussinessObjects.Models;
+namespace HumanResourceapi.Models;
 
 public partial class TaxList
 {
