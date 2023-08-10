@@ -1,6 +1,7 @@
 ﻿using HumanResourceapi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace HumanResourceapi.Controllers.Account
 {
@@ -12,7 +13,7 @@ namespace HumanResourceapi.Controllers.Account
         private readonly SwpProjectContext _context;
         public UserAccountController(SwpProjectContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         [HttpPost("login")]

@@ -17,7 +17,7 @@ namespace HumanResourceapi.Controllers.Payslit
 
         public PayslipsController(SwpProjectContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         // GET: api/Payslips
