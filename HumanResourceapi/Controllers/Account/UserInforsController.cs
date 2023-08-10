@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HumanResourceapi.Models;
+using Microsoft.AspNetCore.Identity;
+using HumanResourceapi.Extensions;
 
 namespace HumanResourceapi.Controllers.Account
 {
@@ -14,142 +16,30 @@ namespace HumanResourceapi.Controllers.Account
     public class UserInforsController : ControllerBase
     {
         private readonly SwpProjectContext _context;
+        
 
         public UserInforsController(SwpProjectContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
-        }
-
-        // GET: api/UserInfors
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserInfor>>> GetUserInfors()
+            
+        }     
+        [HttpGet("{staffid}", Name = "GetUserInforById")]
+        public async Task<ActionResult<UserInfor>> GetUserInforById(int staffid)
         {
-          if (_context.UserInfors == null)
-          {
-              return NotFound();
-          }
-            return await _context.UserInfors.ToListAsync();
-        }
-
-        // GET: api/UserInfors/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UserInfor>> GetUserInfor(int id)
-        {
-          if (_context.UserInfors == null)
-          {
-              return NotFound();
-          }
-            var userInfor = await _context.UserInfors.FindAsync(id);
-
-            if (userInfor == null)
-            {
-                return NotFound();
-            }
-
+            var userInfor = await _context.UserInfors.FirstOrDefaultAsync(u => u.StaffId == staffid);
+            if (userInfor == null) return NotFound();
             return userInfor;
         }
 
-        // PUT: api/UserInfors/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUserInfor(int id, UserInfor userInfor)
+        [HttpGet("filters")]
+        public async Task<IActionResult> GetFilter()
         {
-            if (id != userInfor.StaffId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(userInfor).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserInforExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/UserInfors
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<UserInfor>> PostUserInfor(UserInfor userInfor)
-        {
-          if (_context.UserInfors == null)
-          {
-              return Problem("Entity set 'SwpProjectContext.UserInfors'  is null.");
-          }
-            _context.UserInfors.Add(userInfor);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetUserInfor", new { id = userInfor.StaffId }, userInfor);
-        }
-
-        // DELETE: api/UserInfors/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUserInfor(int id)
-        {
-            if (_context.UserInfors == null)
-            {
-                return NotFound();
-            }
-            var userInfor = await _context.UserInfors.FindAsync(id);
-            if (userInfor == null)
-            {
-                return NotFound();
-            }
-
-            _context.UserInfors.Remove(userInfor);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool UserInforExists(int id)
-        {
-            return (_context.UserInfors?.Any(e => e.StaffId == id)).GetValueOrDefault();
-        }
-        public async Task<bool> IsUserExist(int StaffId)
-        {
-            return await _context.UserInfors.Where(c => c.StaffId == StaffId && c.AccountStatus == true).AnyAsync();
-        }
-
-        public async Task<bool> IsSaveChangeAsync()
-        {
-            return await _context.SaveChangesAsync() >= 0;
-        }
-
-        public async Task<List<int>> GetStaffIdsAsync()
-        {
-            var staffs = await _context.UserInfors
-                .Include(c => c.PersonnelContracts)
-                .Where(c =>
-                c.PersonnelContracts.Any(c => c.ContractStatus == true))
+            var departments = await _context.UserInfors
+                .Select(c => c.Department.DepartmentName)
+                .Distinct()
                 .ToListAsync();
-            return staffs.Select(c => c.StaffId).ToList();
+            return Ok(departments);
         }
-
-        public async Task<List<int>> GetStaffsOfDepartment(int departmentId)
-        {
-            var staffs = await _context.UserInfors
-                .Include(c => c.PersonnelContracts)
-                .Where(c => c.DepartmentId == departmentId &&
-                c.PersonnelContracts.Any(c => c.ContractStatus == true))
-                .ToListAsync();
-
-            return staffs.Select(c => c.StaffId).ToList();
-        }
-
     }
 
 }

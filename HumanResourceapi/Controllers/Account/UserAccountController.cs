@@ -1,4 +1,5 @@
-﻿using HumanResourceapi.Models;
+﻿using HumanResourceapi.Controllers.Account.Login;
+using HumanResourceapi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -17,16 +18,16 @@ namespace HumanResourceapi.Controllers.Account
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(string email, string password)
+        public async Task<IActionResult> Login([FromForm] UserLogin userLogin)
         {
-            var user = await _context.UserAccounts.FirstOrDefaultAsync(c => c.Email.Equals(email));
+            var user = await _context.UserAccounts.FirstOrDefaultAsync(c => c.Email.Equals(userLogin.Email));
             if (user == null)
             {
-                return Problem("Incorrect account email");
+                return Unauthorized();
             }
             else
             {
-                if (user.Password.Equals(password))
+                if (user.Password.Equals(userLogin.Password))
                 {
                     return Ok();
                 }
