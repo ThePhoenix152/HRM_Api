@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HumanResourceapi.Models;
+using HumanResourceapi.Controllers.Departmen.Form;
 
 namespace HumanResourceapi.Controllers.Departmen
 {
@@ -17,107 +18,43 @@ namespace HumanResourceapi.Controllers.Departmen
 
         public DepartmentsController(SwpProjectContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-
-        // GET: api/Departments
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Department>>> GetDepartments()
+        [HttpDelete("remove/{departmentId}")]
+        public async Task<ActionResult> RemoveDepartment(int departmentId)
         {
-          if (_context.Departments == null)
-          {
-              return NotFound();
-          }
-            return await _context.Departments.ToListAsync();
-        }
+            var department = await _context.Departments
+                .FirstOrDefaultAsync(d => d.DepartmentId == departmentId);
 
-        // GET: api/Departments/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Department>> GetDepartment(int id)
-        {
-          if (_context.Departments == null)
-          {
-              return NotFound();
-          }
-            var department = await _context.Departments.FindAsync(id);
-
-            if (department == null)
-            {
-                return NotFound();
-            }
-
-            return department;
-        }
-
-        // PUT: api/Departments/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutDepartment(int id, Department department)
-        {
-            if (id != department.DepartmentId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(department).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DepartmentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Departments
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Department>> PostDepartment(Department department)
-        {
-          if (_context.Departments == null)
-          {
-              return Problem("Entity set 'SwpProjectContext.Departments'  is null.");
-          }
-            _context.Departments.Add(department);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetDepartment", new { id = department.DepartmentId }, department);
-        }
-
-        // DELETE: api/Departments/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDepartment(int id)
-        {
-            if (_context.Departments == null)
-            {
-                return NotFound();
-            }
-            var department = await _context.Departments.FindAsync(id);
-            if (department == null)
-            {
-                return NotFound();
-            }
+            if (department == null) return NotFound();
 
             _context.Departments.Remove(department);
-            await _context.SaveChangesAsync();
 
-            return NoContent();
+            var result = await _context.SaveChangesAsync() > 0;
+
+            if (result) return Ok();
+
+            return BadRequest(new ProblemDetails { Title = "Problem unexpected while removing" });
         }
-
-        private bool DepartmentExists(int id)
+        [HttpPut("add/{departmentName}")]
+        public async Task<ActionResult> CreateDeparment(string departmentName)
         {
-            return (_context.Departments?.Any(e => e.DepartmentId == id)).GetValueOrDefault();
+            Department departmentToAdd = new Department { DepartmentName = departmentName, Status = true };
+            await _context.Departments.AddAsync(departmentToAdd);
+            var result = await _context.SaveChangesAsync() > 0;
+            if (result) return Ok();
+            return BadRequest(new ProblemDetails { Title = "Problem unexpected while creating" });
+        }
+        [HttpPut("update/{departmentId}")]
+        public async Task<ActionResult> UpdateDepartment(int departmentId,[FromForm]  DepartmentUpdateForm department)
+        {
+            var departmentToUpdate = await _context.Departments.FirstOrDefaultAsync(c => c.DepartmentId == departmentId);
+            departmentToUpdate.DepartmentName = department.DepartmentName;
+            departmentToUpdate.Status = department.Status;
+            var result = await _context.SaveChangesAsync() > 0;
+            if (result) return Ok();
+            return BadRequest(new ProblemDetails { Title = "Problem unexpected while updating" });
         }
     }
+
 }

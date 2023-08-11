@@ -17,107 +17,37 @@ namespace HumanResourceapi.Controllers.Leave
 
         public LeaveDayDetailsController(SwpProjectContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-
-        // GET: api/LeaveDayDetails
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<LeaveDayDetail>>> GetLeaveDayDetails()
+        public async Task<bool> IsUserExist(int staffId) => await _context.UserInfors.Where(c => c.StaffId == staffId && c.AccountStatus == true).AnyAsync();
+        [HttpGet("{staffId}")]
+        public async Task<ActionResult<List<LeaveDayDetail>>> GetDetailsOfStaffId(int staffId)
         {
-          if (_context.LeaveDayDetails == null)
-          {
-              return NotFound();
-          }
-            return await _context.LeaveDayDetails.ToListAsync();
+            if (!await IsUserExist(staffId)) return NotFound();
+            var list = await _context.LeaveDayDetails.Include(c => c.LeaveType).Include(c => c.Staff).Where(c => c.StaffId == staffId).ToListAsync();
+            return list;
         }
-
-        // GET: api/LeaveDayDetails/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<LeaveDayDetail>> GetLeaveDayDetail(int id)
+        [HttpPut("add/{staffId}")]
+        public async Task<ActionResult<LeaveDayDetail>> CreateLeaveDayForStaffId(int staffId)
         {
-          if (_context.LeaveDayDetails == null)
-          {
-              return NotFound();
-          }
-            var leaveDayDetail = await _context.LeaveDayDetails.FindAsync(id);
-
-            if (leaveDayDetail == null)
+            if (!await IsUserExist(staffId)) return NotFound();
+            if (await _context.LeaveDayDetails.AnyAsync(c => c.StaffId == staffId)) return BadRequest("This staff has already left");
+            var user = await _context.UserInfors.Include(c => c.LeaveDayDetails).Where(c => c.StaffId == staffId).FirstOrDefaultAsync();
+            bool? gender = (await _context.UserInfors.Where(c => c.StaffId == staffId).FirstOrDefaultAsync()).Gender;
+            LeaveDayDetail leaveDayDetailToAdd = new LeaveDayDetail
             {
-                return NotFound();
-            }
-
-            return leaveDayDetail;
-        }
-
-        // PUT: api/LeaveDayDetails/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutLeaveDayDetail(int id, LeaveDayDetail leaveDayDetail)
-        {
-            if (id != leaveDayDetail.LeaveDayDetailId)
+                StaffId = staffId, LeaveTypeId = 3, DayLeft = 1, ChangeAt = DateTime.Now, CreateAt = DateTime.Now, Year = DateTime.Now.Year
+            };
+            await _context.AddAsync(leaveDayDetailToAdd);
+            if (await _context.SaveChangesAsync() > 0)
             {
-                return BadRequest();
+                return Ok();
             }
-
-            _context.Entry(leaveDayDetail).State = EntityState.Modified;
-
-            try
+            else
             {
-                await _context.SaveChangesAsync();
+                return BadRequest("Error occured while adding data");
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!LeaveDayDetailExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/LeaveDayDetails
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<LeaveDayDetail>> PostLeaveDayDetail(LeaveDayDetail leaveDayDetail)
-        {
-          if (_context.LeaveDayDetails == null)
-          {
-              return Problem("Entity set 'SwpProjectContext.LeaveDayDetails'  is null.");
-          }
-            _context.LeaveDayDetails.Add(leaveDayDetail);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetLeaveDayDetail", new { id = leaveDayDetail.LeaveDayDetailId }, leaveDayDetail);
-        }
-
-        // DELETE: api/LeaveDayDetails/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLeaveDayDetail(int id)
-        {
-            if (_context.LeaveDayDetails == null)
-            {
-                return NotFound();
-            }
-            var leaveDayDetail = await _context.LeaveDayDetails.FindAsync(id);
-            if (leaveDayDetail == null)
-            {
-                return NotFound();
-            }
-
-            _context.LeaveDayDetails.Remove(leaveDayDetail);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool LeaveDayDetailExists(int id)
-        {
-            return (_context.LeaveDayDetails?.Any(e => e.LeaveDayDetailId == id)).GetValueOrDefault();
         }
     }
 }
