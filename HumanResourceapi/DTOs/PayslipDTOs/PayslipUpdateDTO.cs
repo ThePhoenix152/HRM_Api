@@ -1,5 +1,4 @@
-﻿using HumanResourceapi.DTOs.StaffDtos;
-using HumanResourceapi.Entities;
+﻿using HumanResourceapi.Models;
 
 namespace HumanResourceapi.DTOs.PayslipDTOs
 {

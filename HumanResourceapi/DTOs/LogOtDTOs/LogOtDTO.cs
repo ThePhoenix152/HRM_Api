@@ -1,5 +1,4 @@
-using HumanResourceapi.DTOs.StaffDtos;
-using HumanResourceapi.Entities;
+using HumanResourceapi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,6 +42,5 @@ namespace HumanResourceapi.DTOs.LogOtDTOs
 
         public virtual OtTypeDTO? OtType { get; set; }
 
-        public virtual StaffInfoDto Staff { get; set; } = null!;
     }
 }

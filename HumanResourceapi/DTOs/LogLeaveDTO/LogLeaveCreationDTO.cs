@@ -1,11 +1,11 @@
-using API.Entities;
+using HumanResourceapi.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace API.DTOs.LogLeaveDTO
+namespace HumanResourceapi.DTOs.LogLeaveDTO
 {
     public class LogLeaveCreationDTO
     {

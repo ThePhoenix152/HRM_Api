@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using API.DTOs.UserInforDTO;
+using HumanResourceapi.DTOs.UserInforDTO;
 
-namespace API.DTOs.DepartmentDTO
+namespace HumanResourceapi.DTOs.DepartmentDTO
 {
   public class DepartmentUpdateDto
   {

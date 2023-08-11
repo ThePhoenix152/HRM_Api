@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using API.DTOs.StaffDtos;
-using API.DTOs.UserInforDTO;
-using API.Entities;
+using HumanResourceapi.DTOs.UserInforDTO;
+using HumanResourceapi.Models;
 
-namespace API.DTOs.LogLeaveDTO
+namespace HumanResourceapi.DTOs.LogLeaveDTO
 {
   public class LogLeaveDTO
   {
@@ -46,7 +45,6 @@ namespace API.DTOs.LogLeaveDTO
 
     public virtual LeaveTypeDTO? LeaveType { get; set; }
 
-    public virtual StaffInfoDto Staff { get; set; } = null!;
 
   }
 }

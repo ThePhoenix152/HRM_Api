@@ -1,6 +1,6 @@
-﻿using API.Entities;
+﻿using HumanResourceapi.Models;
 
-namespace API.DTOs.LeaveDayDetailDTO
+namespace HumanResourceapi.DTOs.LeaveDayDetailDTO
 {
     public class LeaveDayDetailUpdateDTO
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace API.DTOs.DepartmentDTO
+namespace HumanResourceapi.DTOs.DepartmentDTO
 {
     public class DepartmentUserInforDto
     {
