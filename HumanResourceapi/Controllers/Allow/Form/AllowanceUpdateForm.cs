@@ -1,4 +1,4 @@
-﻿namespace HumanResourceapi.Controllers.Allowances.Form
+﻿namespace HumanResourceapi.Controllers.Allow.Form
 {
     public class AllowanceUpdateForm
     {

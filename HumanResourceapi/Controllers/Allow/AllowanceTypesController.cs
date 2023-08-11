@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HumanResourceapi.Models;
 
-namespace HumanResourceapi.Controllers.Allowance
+namespace HumanResourceapi.Controllers.Allow
 {
     [Route("api/[controller]")]
     [ApiController]

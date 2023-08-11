@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HumanResourceapi.Models;
 
-namespace HumanResourceapi.Controllers.Payslit
+namespace HumanResourceapi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
