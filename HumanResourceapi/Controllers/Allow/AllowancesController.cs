@@ -19,6 +19,13 @@ namespace HumanResourceapi.Controllers.Allow
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
+        [HttpGet("getAll")]
+        public async Task<ActionResult<List<Allowance>>> GetAllowanceListAsync()
+        {
+            var list = await _context.Allowances.ToListAsync();
+            if (list.Count == 0 ) return BadRequest("No allowanace data");
+            return list;
+        }
         
         [HttpGet("contracts/{contractId}")]
         public async Task<ActionResult<List<Allowance>>> GetAllowanceAsync(int contractId)
