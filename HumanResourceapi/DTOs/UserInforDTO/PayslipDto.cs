@@ -1,6 +1,6 @@
-using API.Entities;
+using HumanResourceapi.Models;
 
-namespace API.DTOs.UserInforDTO
+namespace HumanResourceapi.DTOs.UserInforDTO
 {
     public class PayslipDto
     {

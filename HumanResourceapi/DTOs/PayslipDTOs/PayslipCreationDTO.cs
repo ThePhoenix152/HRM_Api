@@ -1,8 +1,8 @@
-﻿using API.DTOs.StaffDtos;
-using API.DTOs.UserInforDTO;
-using API.Entities;
+﻿using HumanResourceapi.DTOs.StaffDtos;
+using HumanResourceapi.DTOs.UserInforDTO;
+using HumanResourceapi.Entities;
 
-namespace API.DTOs.PayslipDTOs
+namespace HumanResourceapi.DTOs.PayslipDTOs
 {
     public class PayslipCreationDTO
     {

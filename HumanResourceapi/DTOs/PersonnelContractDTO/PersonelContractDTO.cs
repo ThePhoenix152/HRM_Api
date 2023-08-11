@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using API.DTOs.UserInforDTO;
-using API.Entities;
+using HumanResourceapi.DTOs.UserInforDTO;
+using HumanResourceapi.Entities;
 
-namespace API.DTOs.PersonnelContractDTO
+namespace HumanResourceapi.DTOs.PersonnelContractDTO
 {
     public class PersonnelContractDTO
     {

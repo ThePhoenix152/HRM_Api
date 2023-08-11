@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using HumanResourceapi.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Extensions
+namespace HumanResourceapi.Extensions
 {
     public static class TicketEextensions
     {

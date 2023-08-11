@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using API.DTOs.SkillDTO;
-using API.Entities;
+using HumanResourceapi.DTOs.SkillDTO;
+using HumanResourceapi.Entities;
 
-namespace API.DTOs.UserInforDTO
+namespace HumanResourceapi.DTOs.UserInforDTO
 {
   public class UserInforDto
   {

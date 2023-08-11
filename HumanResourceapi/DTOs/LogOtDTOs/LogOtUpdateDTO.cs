@@ -1,4 +1,4 @@
-namespace API.DTOs.LogOtDTOs
+namespace HumanResourceapi.DTOs.LogOtDTOs
 {
     public class LogOtUpdateDTO
     {

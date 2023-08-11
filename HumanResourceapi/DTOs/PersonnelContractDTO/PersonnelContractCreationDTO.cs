@@ -1,11 +1,11 @@
-using API.Entities;
+using HumanResourceapi.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace API.DTOs.PersonnelContractDTO
+namespace HumanResourceapi.DTOs.PersonnelContractDTO
 {
     public class PersonnelContractCreationDTO
     {

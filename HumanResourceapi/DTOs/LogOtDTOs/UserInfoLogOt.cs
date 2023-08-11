@@ -1,6 +1,6 @@
-﻿using API.Entities;
+﻿using HumanResourceapi.Entities;
 
-namespace API.DTOs.LogOtDTOs
+namespace HumanResourceapi.DTOs.LogOtDTOs
 {
     public class UserInfoLogOt
     {

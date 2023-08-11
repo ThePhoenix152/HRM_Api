@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace API.RequestHelpers
+namespace HumanResourceapi.RequestHelpers
 {
     public static class HttpExtensions
     {

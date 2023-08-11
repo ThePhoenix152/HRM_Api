@@ -1,7 +1,7 @@
-using API.DTOs.UserInforDTO;
-using API.Entities;
+using HumanResourceapi.DTOs.UserInforDTO;
+using HumanResourceapi.Entities;
 
-namespace API.DTOs.TicketDTO
+namespace HumanResourceapi.DTOs.TicketDTO
 {
   public class TicketDto
   {

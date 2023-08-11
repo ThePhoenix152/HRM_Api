@@ -1,4 +1,4 @@
-namespace API.DTOs.PersonnelContractDTO
+namespace HumanResourceapi.DTOs.PersonnelContractDTO
 {
     public class AllowanceTypeDTO
     {

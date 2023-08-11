@@ -1,7 +1,7 @@
-﻿using API.DTOs.StaffDtos;
-using API.Entities;
+﻿using HumanResourceapi.DTOs.StaffDtos;
+using HumanResourceapi.Entities;
 
-namespace API.DTOs.PayslipDTOs
+namespace HumanResourceapi.DTOs.PayslipDTOs
 {
     public class PayslipUpdateDTO
     {

@@ -1,6 +1,6 @@
-using API.DTOs.UserInforDTO;
+using HumanResourceapi.DTOs.UserInforDTO;
 
-namespace API.DTOs.UserDTO
+namespace HumanResourceapi.DTOs.UserDTO
 {
     public class UserDto
     {

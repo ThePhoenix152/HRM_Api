@@ -1,6 +1,6 @@
-﻿using API.Entities;
+﻿using HumanResourceapi.Entities;
 
-namespace API.DTOs.PayslipDTOs
+namespace HumanResourceapi.DTOs.PayslipDTOs
 {
     public class TaxDetailDTO
     {

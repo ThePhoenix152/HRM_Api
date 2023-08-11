@@ -1,4 +1,4 @@
-﻿namespace API.RequestHelpers
+﻿namespace HumanResourceapi.RequestHelpers
 {
     public class OtherTicketParams: PaginationPrams
     {

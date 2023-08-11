@@ -1,4 +1,4 @@
-﻿namespace API.DTOs.PayslipDTOs
+﻿namespace HumanResourceapi.DTOs.PayslipDTOs
 {
     public class PayslipCreationObject
     {
