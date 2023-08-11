@@ -1,4 +1,5 @@
 ﻿using HumanResourceapi.Controllers.Account.Login;
+using HumanResourceapi.Controllers.Account.UserForm;
 using HumanResourceapi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -38,19 +39,42 @@ namespace HumanResourceapi.Controllers.Account
             }
         }
         [HttpPost("register")]
-        public async Task<IActionResult> Register(string email, string password)
+        public async Task<IActionResult> Register([FromForm] UserRegister userRegister)
         {
             if (!_context.Departments.Any())
             {
                 return Problem("No department");
             }
-            var user = await _context.UserAccounts.FirstOrDefaultAsync(c => c.Email.Equals(email));
-            if(user! == null) 
+            var user = await _context.UserAccounts.FirstOrDefaultAsync(c => c.Email.Equals(userRegister.Email));
+            if(user != null) 
             {
                 return Problem("Account existed!");
             }
-            var registerUser = new UserAccount { Email = email, Password = password };
-            var result = _context.UserAccounts.AddAsync(registerUser);
+            else
+            {
+                user = new UserAccount { Email = userRegister.Email, Password = userRegister.Password, RoleId = userRegister.RoleId };
+                await _context.UserAccounts.AddAsync(user);
+            }
+            var registerUser = new UserInfor {
+                Id = userRegister.Id,
+                LastName = userRegister.LastName,
+                FirstName = userRegister.FirstName,
+                Dob = userRegister.Dob,
+                Phone = userRegister.Phone,
+                Gender = userRegister.Gender,
+                Address = userRegister.Address,
+                Country = userRegister.Country,
+                CitizenId = userRegister.CitizenId,
+                DepartmentId = userRegister.DepartmentId,
+                IsManager = userRegister.IsManager,
+                HireDate = DateTime.Now,
+                BankAccount = userRegister.BankAccount,
+                BankAccountName = userRegister.BankAccountName.ToUpper(),
+                Bank = userRegister.Bank,
+                WorkTimeByYear = 0,
+                AccountStatus = true
+            };
+            var result = _context.UserInfors.AddAsync(registerUser);
             await _context.SaveChangesAsync();
             return StatusCode(200);
         }
