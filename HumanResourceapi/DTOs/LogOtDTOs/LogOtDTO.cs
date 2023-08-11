@@ -1,3 +1,4 @@
+using HumanResourceapi.DTOs.StaffDtos;
 using HumanResourceapi.Models;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,8 @@ namespace HumanResourceapi.DTOs.LogOtDTOs
         public bool? Enable { get; set; }
 
         public virtual OtTypeDTO? OtType { get; set; }
+        public virtual StaffInfoDto Staff { get; set; } = null!;
+
 
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HumanResourceapi.DTOs.StaffDtos;
 using HumanResourceapi.DTOs.UserInforDTO;
 using HumanResourceapi.Models;
 
@@ -45,6 +46,8 @@ namespace HumanResourceapi.DTOs.LogLeaveDTO
 
     public virtual LeaveTypeDTO? LeaveType { get; set; }
 
+        public virtual StaffInfoDto Staff { get; set; } = null!;
 
-  }
+
+    }
 }

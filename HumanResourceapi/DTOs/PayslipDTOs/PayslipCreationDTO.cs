@@ -1,4 +1,5 @@
-﻿using HumanResourceapi.DTOs.UserInforDTO;
+﻿using HumanResourceapi.DTOs.StaffDtos;
+using HumanResourceapi.DTOs.UserInforDTO;
 using HumanResourceapi.Models;
 
 namespace HumanResourceapi.DTOs.PayslipDTOs
@@ -70,6 +71,8 @@ namespace HumanResourceapi.DTOs.PayslipDTOs
         public bool? Enable { get; set; }
 
         public string? Status { get; set; }
+
+        public virtual StaffInfoDto Staff { get; set; } = null!;
 
 
         public virtual ICollection<TaxDetailDTO> TaxDetails { get; set; } = new List<TaxDetailDTO>();

@@ -1,3 +1,4 @@
+using HumanResourceapi.DTOs.StaffDtos;
 using HumanResourceapi.DTOs.UserInforDTO;
 using HumanResourceapi.Models;
 using System;
@@ -75,6 +76,7 @@ namespace HumanResourceapi.DTOs.PayslipDTOs
 
         public string? Status { get; set; }
 
+        public virtual StaffInfoDto Staff { get; set; } = null!;
 
         public virtual ICollection<TaxDetailDTO> TaxDetails { get; set; } = new List<TaxDetailDTO>();
     }
