@@ -1,7 +1,7 @@
-﻿using HumanResourceapi.Models;
+﻿using HumanResourceapi.Controllers.Allowances.Form;
+using HumanResourceapi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Contracts;
 
 namespace HumanResourceapi.Controllers.Allowances
 {
@@ -57,5 +57,33 @@ namespace HumanResourceapi.Controllers.Allowances
             return Ok();
         }
         public async Task<PersonnelContract?> GetPersonnelContractAllowance(int contractId) => await _context.PersonnelContracts.Include(c => c.Allowances).Where(c => c.ContractId == contractId).FirstOrDefaultAsync();
+
+        [HttpPut("contracts/{allowanceId}/{contractId}")]
+        public async Task<ActionResult<Allowance>> UpdateAllowanceAsync(int contractId, int allowanceId, [FromForm] AllowanceUpdateForm allowance)
+        {
+            if (!await _context.PersonnelContracts.AnyAsync(c => c.ContractId == contractId))
+            {
+                return NotFound();
+            }
+            if (!await _context.AllowanceTypes.AnyAsync(c => c.AllowanceTypeId == allowance.AllowanceTypeId))
+            {
+                return BadRequest("Invalid allowance");
+            }
+            var allowanceToUpdate = await _context.Allowances.Where(c => c.ContractId == contractId && c.AllowanceId == allowanceId).FirstOrDefaultAsync();
+            allowanceToUpdate.AllowanceTypeId = allowance.AllowanceTypeId;
+            allowanceToUpdate.AllowanceSalary = allowance.AllowanceSalary;
+            _context.Allowances.Update(allowanceToUpdate);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+        [HttpDelete("{allowanceId}")]
+        public async Task<ActionResult<Allowance>> DeleteAllowanceAsync(int allowanceId)
+        {
+            var allowanceToDelete = await _context.Allowances.Where(c => c.AllowanceId == allowanceId).FirstOrDefaultAsync();
+            if (allowanceToDelete == null) return BadRequest("Khong ton tai phuc loi");
+            _context.Allowances.Remove(allowanceToDelete);
+            await _context.SaveChangesAsync();
+            return Ok(allowanceToDelete.AllowanceId);
+        }
     }
 }
