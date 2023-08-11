@@ -1,8 +1,8 @@
 ﻿
-using API.DTOs.UserInforDTO;
-using API.Entities;
+using HumanResourceapi.DTOs.UserInforDTO;
+using HumanResourceapi.Models;
 
-namespace API.DTOs.LeaveDayDetailDTO
+namespace HumanResourceapi.DTOs.LeaveDayDetailDTO
 {
     public class LeaveDayDetailDTO
     {

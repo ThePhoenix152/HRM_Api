@@ -1,5 +1,5 @@
 using HumanResourceapi.DTOs.UserInforDTO;
-using HumanResourceapi.Entities;
+using HumanResourceapi.Models;
 
 namespace HumanResourceapi.DTOs.TicketDTO
 {

@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using HumanResourceapi.DTOs.SkillDTO;
-using HumanResourceapi.Entities;
+using HumanResourceapi.Models;
 
 namespace HumanResourceapi.DTOs.UserInforDTO
 {
@@ -49,7 +48,6 @@ namespace HumanResourceapi.DTOs.UserInforDTO
 
     public bool? AccountStatus { get; set; }
 
-    public List<StaffSkillDto>? StaffSkills { get; set; }
 
     public PersonnelContract? PersonnelContract { get; set; }
 

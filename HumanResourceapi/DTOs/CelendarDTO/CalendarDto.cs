@@ -1,4 +1,4 @@
-﻿namespace API.DTOs.CalendarDto
+﻿namespace HumanResourceapi.DTOs.CalendarDto
 {
     public class CalendarDto
     {

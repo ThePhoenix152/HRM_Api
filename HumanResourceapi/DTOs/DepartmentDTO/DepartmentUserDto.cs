@@ -1,4 +1,4 @@
-﻿namespace API.DTOs.DepartmentDTO
+﻿namespace HumanResourceapi.DTOs.DepartmentDTO
 {
     public class DepartmentUserDto
     {

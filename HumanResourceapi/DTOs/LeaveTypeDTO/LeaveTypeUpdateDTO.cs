@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace API.DTOs.LeaveTypeDTO
+namespace HumanResourceapi.DTOs.LeaveTypeDTO
 {
     public class LeaveTypeUpdateDTO
     {

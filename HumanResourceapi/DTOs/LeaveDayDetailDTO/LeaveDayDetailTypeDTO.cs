@@ -1,4 +1,4 @@
-﻿namespace API.DTOs.LeaveDayDetailDTO
+﻿namespace HumanResourceapi.DTOs.LeaveDayDetailDTO
 {
     public class LeaveDayDetailTypeDTO
     {
