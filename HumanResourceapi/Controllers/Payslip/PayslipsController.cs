@@ -185,48 +185,48 @@ namespace HumanResourceapi.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{payslipId}")]
-        public async Task<ActionResult<PayslipDTO>> PartialUpdatePayslip(
-            int payslipId,
-            JsonPatchDocument<PayslipUpdateDTO> jsonPatchDocument)
-        {
-            if (!await _payslipService.IsPayslipExist(payslipId))
-            {
-                return BadRequest(new ProblemDetails { Title = "Bảng lương không tồn tại" });
-            }
+        //[HttpPatch("{payslipId}")]
+        //public async Task<ActionResult<PayslipDTO>> PartialUpdatePayslip(
+        //    int payslipId,
+        //    JsonPatchDocument<PayslipUpdateDTO> jsonPatchDocument)
+        //{
+        //    if (!await _payslipService.IsPayslipExist(payslipId))
+        //    {
+        //        return BadRequest(new ProblemDetails { Title = "Bảng lương không tồn tại" });
+        //    }
 
-            var payslip = await _context.Payslips
-                .Where(c => c.PayslipId == payslipId)
-                .FirstOrDefaultAsync();
+        //    var payslip = await _context.Payslips
+        //        .Where(c => c.PayslipId == payslipId)
+        //        .FirstOrDefaultAsync();
 
-            if (payslip == null)
-            {
-                return BadRequest(new ProblemDetails { Title = "Bảng lương không tồn tại" });
+        //    if (payslip == null)
+        //    {
+        //        return BadRequest(new ProblemDetails { Title = "Bảng lương không tồn tại" });
 
-            }
+        //    }
 
-            payslip.ChangeAt = DateTime.UtcNow.AddHours(7);
+        //    payslip.ChangeAt = DateTime.UtcNow.AddHours(7);
 
-            var payslipPatch = _mapper.Map<PayslipUpdateDTO>(payslip);
+        //    var payslipPatch = _mapper.Map<PayslipUpdateDTO>(payslip);
 
-            jsonPatchDocument.ApplyTo(payslipPatch, ModelState);
+        //    jsonPatchDocument.ApplyTo(payslipPatch, ModelState);
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
 
-            }
-            if (!TryValidateModel(payslipPatch))
-            {
-                return BadRequest(ModelState);
-            }
+        //    }
+        //    if (!TryValidateModel(payslipPatch))
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            _mapper.Map(payslipPatch, payslip);
+        //    _mapper.Map(payslipPatch, payslip);
 
-            await _context.SaveChangesAsync();
+        //    await _context.SaveChangesAsync();
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
         [HttpGet("filters")]
         public async Task<IActionResult> GetFilter()
