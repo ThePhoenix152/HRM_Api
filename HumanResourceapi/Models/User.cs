@@ -1,6 +1,7 @@
+using HumanResourceapi.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace API.Entities
+namespace HumanResourceapi.Models
 {
     public class User : IdentityUser
     {   

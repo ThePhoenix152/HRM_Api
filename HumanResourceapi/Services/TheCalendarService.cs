@@ -1,5 +1,5 @@
 ﻿using HumanResourceapi.DTOs.CalendarDto;
-using HumanResourceapi.Entities;
+using HumanResourceapi.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

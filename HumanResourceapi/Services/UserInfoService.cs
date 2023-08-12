@@ -1,4 +1,4 @@
-﻿using HumanResourceapi.Entities;
+﻿using HumanResourceapi.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 

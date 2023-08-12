@@ -2,7 +2,7 @@
 using System.Xml.Schema;
 using HumanResourceapi.DTOs.LogLeaveDTO;
 using HumanResourceapi.DTOs.LogOtDTOs;
-using HumanResourceapi.Entities;
+using HumanResourceapi.Models;
 using HumanResourceapi.Extensions;
 using HumanResourceapi.RequestHelpers;
 using AutoMapper;

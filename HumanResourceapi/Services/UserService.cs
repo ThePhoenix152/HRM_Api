@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using HumanResourceapi.Controllers;
 using HumanResourceapi.DTOs.UserInforDTO;
-using HumanResourceapi.Entities;
+using HumanResourceapi.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using HumanResourceapi.DTOs.PayslipDTOs;
 using HumanResourceapi.DTOs.PersonnelContractDTO;
-using HumanResourceapi.Entities;
+using HumanResourceapi.Models;
 using HumanResourceapi.Extensions;
 using HumanResourceapi.RequestHelpers;
 using AutoMapper;

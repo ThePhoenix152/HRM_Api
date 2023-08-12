@@ -1,5 +1,5 @@
 ﻿using HumanResourceapi.DTOs.LeaveDayDetailDTO;
-using HumanResourceapi.Entities;
+using HumanResourceapi.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
