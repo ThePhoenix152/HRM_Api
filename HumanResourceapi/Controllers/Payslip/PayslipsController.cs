@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HumanResourceapi.Models;
+using HumanResourceapi.DTOs.PayslipDTOs;
+using System.Diagnostics.Contracts;
 
 namespace HumanResourceapi.Controllers
 {
@@ -32,22 +34,22 @@ namespace HumanResourceapi.Controllers
         }
 
         // GET: api/Payslips/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Payslip>> GetPayslip(int id)
+        [HttpGet("{staffid}")]
+        public async Task<ActionResult<List<Payslip>>> GetPayslip(int staffid)
         {
-          if (_context.Payslips == null)
-          {
-              return NotFound();
-          }
-            var payslip = await _context.Payslips.FindAsync(id);
-
-            if (payslip == null)
+            if (!await _context.Payslips.AnyAsync(c => c.StaffId == staffid))
             {
                 return NotFound();
             }
-
-            return payslip;
+            var result = await _context.Payslips.Include(c => c.Staff).ThenInclude(c => c.Department)
+                .Include(c => c.TaxDetails)
+                    .ThenInclude(c => c.TaxLevelNavigation)
+                .Where(c => c.StaffId == staffid)
+                .OrderByDescending(c => c.PayslipId)
+                .ToListAsync(); 
+            return result;
         }
+
 
         // PUT: api/Payslips/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

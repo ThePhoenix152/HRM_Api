@@ -1,7 +1,7 @@
-﻿using API.DTOs.DepartmentDTO;
-using API.Entities;
+﻿using HumanResourceapi.DTOs.DepartmentDTO;
+using HumanResourceapi.Models;
 
-namespace API.DTOs.StaffDtos
+namespace HumanResourceapi.DTOs.StaffDtos
 {
   public class StaffInfoDto
   {
