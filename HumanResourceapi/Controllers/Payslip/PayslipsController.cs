@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HumanResourceapi.Models;
 using HumanResourceapi.Controllers.Form;
-using HumanResourceapi.DTOs.PayslipDTOs;
+
+
 
 namespace HumanResourceapi.Controllers
 {
@@ -32,7 +33,7 @@ namespace HumanResourceapi.Controllers
             if (!await _context.Payslips.AnyAsync(c => c.PayslipId == payslipId && c.StaffId == staffId)) return BadRequest("Khong ton tai");
             return await _context.Payslips.Include(c => c.Staff).ThenInclude(c => c.Department).Include(c => c.TaxDetails).ThenInclude(c => c.TaxLevelNavigation).Where(c => c.StaffId == staffId && c.PayslipId == payslipId).FirstOrDefaultAsync();
         }
-        [HttpPut("staff/add/{staffId}")]
+        [HttpPost("staff/add/{staffId}")]
         public async Task<ActionResult<Payslip>> CreatePayslipByStaffId(int staffId, [FromForm] PayslipCreationForm payslipCreationForm)
         {
             if (!await _context.UserInfors.Where(c => c.StaffId == staffId && c.AccountStatus == true).AnyAsync())
@@ -56,7 +57,19 @@ namespace HumanResourceapi.Controllers
             }
             return Ok();
         }
-
+        [HttpPut("staff/update/{payslipId}")]
+        public async Task<ActionResult<Payslip>> UpdatePayslip(int payslipId, [FromForm] PayslipUpdateForm payslipUpdateForm)
+        {
+            if(!await _context.Payslips.AnyAsync(c => c.PayslipId == payslipId))
+            {
+                return BadRequest("Staff doesn't have payslips");
+            }
+            var payslipToUpdate = await _context.Payslips.Where(c => c.PayslipId == payslipId).FirstOrDefaultAsync();
+            payslipToUpdate.ChangeAt = DateTime.UtcNow.AddHours(7);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+        [HttpGet]
         public async Task<(Payslip, List<TaxDetail>)> AddPayslip(int staffId, [FromForm] PayslipCreationForm payslipCreationForm)
         {
             var userInfo = await _context.UserInfors.Include(c => c.Payslips).Where(c => c.StaffId == staffId && c.AccountStatus == true).FirstOrDefaultAsync();
@@ -91,7 +104,7 @@ namespace HumanResourceapi.Controllers
             int otSalary = await OtSalary(staffId, payslipCreationForm.Month, payslipCreationForm.Year);
             int actualNetSalary = stdNetSalary + otSalary;
             //ng su dung lao dong tra
-            CompanyInsuranceDTO companyInsuranceDTO = CompanyInsuranceCalculate(actualGrossSalary, (int)actualTaxableSalary);
+            CompanyInsurance companyInsuranceDTO = CompanyInsuranceCalculate(actualGrossSalary, (int)actualTaxableSalary);
             int actualCompanyPaid = (int)(companyInsuranceDTO.NetSalary + otSalary);
 
             DateTime payDay = new DateTime(payslipCreationForm.Year, payslipCreationForm.Month, stdPayDay);
@@ -133,7 +146,8 @@ namespace HumanResourceapi.Controllers
         private static double CompanySocialInsurance = 0.175;
         private static double CompanyHealthInsurance = 0.03;
         private static double CompanyUnemploymentInsurance = 0.01;
-        public CompanyInsuranceDTO CompanyInsuranceCalculate(int grossSalary, int taxableSalary)
+        [HttpGet]
+        public CompanyInsurance CompanyInsuranceCalculate(int grossSalary, int taxableSalary)
         {
             int SocialInsuranceDeduction = (int)(taxableSalary * CompanySocialInsurance);
             int HealthInsuranceDeduction = (int)(taxableSalary * CompanyHealthInsurance);
@@ -157,7 +171,7 @@ namespace HumanResourceapi.Controllers
             int totalInsurance = (SocialInsuranceDeduction + HealthInsuranceDeduction + UnemploymentInsuranceDeduction);
             int netSalary = grossSalary + totalInsurance;
 
-            CompanyInsuranceDTO companyInsuranceDto = new CompanyInsuranceDTO
+            CompanyInsurance companyInsuranceDto = new CompanyInsurance
             {
                 GrossSalary = grossSalary,
                 SocialInsurance = SocialInsuranceDeduction,
@@ -179,6 +193,7 @@ namespace HumanResourceapi.Controllers
                 (28000000, 0.3),
                 (0, 0.35),
             };
+        [HttpGet]
         public async Task<int> OtSalary(int staffId, int month, int year)
         {
             var logOts = await _context.LogOts
@@ -198,7 +213,7 @@ namespace HumanResourceapi.Controllers
 
             return 0;
         }
-
+        [HttpGet]
         public List<TaxDetail> PersonalIncomeTaxCalculate(int ThuNhapChiuThue)
         {
             List<TaxDetail> result = new List<TaxDetail>();
@@ -239,7 +254,8 @@ namespace HumanResourceapi.Controllers
 
             return result;
         }
-        public static int countWorkDays(int year, int month)
+        [HttpGet]
+        public int countWorkDays(int year, int month)
         {
             int totalDays = DateTime.DaysInMonth(year, month);
             int workDays = 0;
@@ -253,6 +269,7 @@ namespace HumanResourceapi.Controllers
             }
             return workDays;
         }
+        [HttpGet]
         public async Task<int> GetStandardWorkDays(int month, int year)
         {
             var StandardWorkDays = await _context.TheCalendars
@@ -264,6 +281,7 @@ namespace HumanResourceapi.Controllers
 
             return StandardWorkDays;
         }
+        [HttpGet]
         public async Task<int> GetNoDependencies(int staffId)
         {
             var noOfDependencies = await _context.PersonnelContracts
@@ -272,6 +290,7 @@ namespace HumanResourceapi.Controllers
                 .FirstOrDefaultAsync();
             return (int)noOfDependencies;
         }
+        [HttpGet]
         public async Task<int> TaxableIncomeCalculation(int salaryBeforeTax, int staffId)
         {
 
@@ -287,7 +306,7 @@ namespace HumanResourceapi.Controllers
 
             return taxableIncome;
         }
-
+        [HttpGet]
         public async Task<int> GetFamilyAllowance(int staffId)
         {
             int familyAllowance = 4400000;
@@ -302,7 +321,7 @@ namespace HumanResourceapi.Controllers
             return (int)noOfDependencies * familyAllowance;
         }
 
-
+        [HttpGet]
         public async Task<int> BasicSalaryOneDayOfMonth(int staffId, int month, int year)
         {
             var personnelContract = await _context.PersonnelContracts
@@ -328,6 +347,7 @@ namespace HumanResourceapi.Controllers
             Console.WriteLine("Here");
             return salaryOneDay;
         }
+        [HttpGet]
         public async Task<int> GetAllowancesOfStaff(int staffId)
         {
             var personnelContractId = await _context.PersonnelContracts
@@ -354,6 +374,7 @@ namespace HumanResourceapi.Controllers
 
 
         }
+        [HttpGet]
         public async Task<int> GetActualWorkDaysOfStaff(
             int staffId, int month, int year)
         {
@@ -377,6 +398,7 @@ namespace HumanResourceapi.Controllers
                 return totalWorkingDays;
             }
         }
+        [HttpGet]
         public async Task<int> GetOtDays(int staffId, int month, int year)
         {
             var logOts = await _context.LogOts
@@ -391,6 +413,7 @@ namespace HumanResourceapi.Controllers
 
             return (int)logOtDays;
         }
+        [HttpGet]
         public async Task<int> GetLeaveDays(int staffId, int month, int year)
         {
             var logLeaves = await _context.LogLeaves
@@ -423,6 +446,7 @@ namespace HumanResourceapi.Controllers
 
             return (int)sum;
         }
+        [HttpGet]
         public async Task<int> GetLeavesHours(int staffId, int month, int year)
         {
             var logLeaves = await _context.LogLeaves
@@ -446,6 +470,7 @@ namespace HumanResourceapi.Controllers
 
             return leaveHours * 8;
         }
+        [HttpGet]
         public async Task<List<TheCalendar>> GetWorkingDays(DateTime start, DateTime end)
         {
             var workingdays = await _context.TheCalendars
@@ -457,7 +482,7 @@ namespace HumanResourceapi.Controllers
             return workingdays;
         }
 
-
+        [HttpGet]
         public async Task<int> GetDeductedSalary(int staffId, int paidByDate, int month, int year)
         {
             var logLeaves = await _context.LogLeaves
@@ -487,6 +512,7 @@ namespace HumanResourceapi.Controllers
 
             return totalDeductedSalary;
         }
+        [HttpGet]
         public DateTime GetStartDay(int month, DateTime start)
         {
             if (month < 1 || month > 12)
@@ -512,7 +538,7 @@ namespace HumanResourceapi.Controllers
                 return firstDateOfMonth;
             }
         }
-
+        [HttpGet]
         public DateTime GetEndDay(int month, DateTime end)
         {
             if (month < 1 || month > 12)
@@ -540,6 +566,17 @@ namespace HumanResourceapi.Controllers
 
                 return lastDayOfMonth;
             }
+        }
+        [HttpGet("filters")]
+        public async Task<IActionResult> GetFilter()
+        {
+            var departments = await _context.Payslips
+                .Include(c => c.Staff)
+                .ThenInclude(c => c.Department)
+                .Select(c => c.Staff.Department.DepartmentName)
+                .Distinct()
+                .ToListAsync();
+            return Ok(departments);
         }
     }
 }
