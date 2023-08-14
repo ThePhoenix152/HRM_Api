@@ -4,10 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 using HumanResourceapi.Models;
-
-
+using AutoMapper;
+using HumanResourceapi.Services;
+using HumanResourceapi.DTOs.PayslipDTOs;
+using HumanResourceapi.RequestHelpers;
 
 namespace HumanResourceapi.Controllers
 {
@@ -16,6 +19,12 @@ namespace HumanResourceapi.Controllers
     public class PayslipsController : ControllerBase
     {
         private readonly SwpProjectContext _context;
+        private readonly IMapper _mapper;
+        public PayslipService _payslipService;
+        public UserInfoService _userInfoService;
+        public PersonnelContractService _personnelContractService;
+        public LogLeaveService _logLeaveService;
+        public DepartmentService _departmentService;
 
         public PayslipsController(
             SwpProjectContext context,
@@ -36,126 +45,188 @@ namespace HumanResourceapi.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
 
         }
-
-        // GET: api/Payslips
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Payslip>>> GetPayslips()
+        public async Task<ActionResult<PagedList<PayslipDTO>>> GetPayslips(
+            [FromQuery] PayslipParams payslipParams
+            )
         {
-          if (_context.Payslips == null)
-          {
-              return NotFound();
-          }
-            return await _context.Payslips.ToListAsync();
+            var payslips = await _payslipService.GetPayslipAsync(payslipParams);
+
+            Response.AddPaginationHeader(payslips.MetaData);
+
+            return payslips;
+
         }
 
-        // GET: api/Payslips/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Payslip>> GetPayslip(int id)
-        {
-          if (_context.Payslips == null)
-          {
-              return NotFound();
-          }
-            var payslip = await _context.Payslips.FindAsync(id);
 
-            if (payslip == null)
+
+        [HttpGet("{staffId}")]
+        public async Task<ActionResult<List<PayslipDTO>>> GetPayslipListByStaffId(int staffId)
+        {
+            return await _payslipService.GetPayslipOfStaff(staffId);
+        }
+
+        [HttpGet("{payslipId}/staffs/{staffId}", Name = "GetPayslipByStaffIdAndPayslipId")]
+        public async Task<ActionResult<PayslipDTO>> GetPayslipByStaffIdAndPayslipId(int staffId, int payslipId)
+        {
+            if (!await _payslipService.IsPayslipExist(staffId, payslipId))
+            {
+                return BadRequest(new ProblemDetails { Title = "Bảng lương không tồn tại" });
+            }
+
+            return await _payslipService.GetPayslipOfStaffByPayslipId(staffId, payslipId);
+
+        }
+
+        [HttpPost("staffs/{staffId}")]
+        public async Task<ActionResult<PayslipDTO>> CreatePayslipByStaffIdForAMonth(
+            int staffId,
+            PayslipInputCreationDto payslipInputCreationDto
+            )
+        {
+            if (!await _userInfoService.IsUserExist(staffId))
             {
                 return NotFound();
             }
 
-            return payslip;
+            if (!await _personnelContractService.IsValidContractExist(staffId))
+            {
+                return BadRequest(new ProblemDetails { Title = "Người dùng không có hợp đồng hợp lệ trong hệ thống, vui lòng kiểm tra lại thông tin hợp đồng" });
+            }
+
+            var returnValue = await _payslipService.AddPayslipToDatabase(
+                staffId,
+                payslipInputCreationDto);
+
+
+            return CreatedAtRoute(
+                "GetPayslipByStaffIdAndPayslipId",
+                new { payslipId = returnValue.PayslipId, staffId = returnValue.StaffId },
+                returnValue);
         }
 
-        // PUT: api/Payslips/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPayslip(int id, Payslip payslip)
+        [HttpPost("staffs")]
+        public async Task<ActionResult<List<PayslipCreationDTO>>> CreatePayslipForAllStaff(PayslipInputCreationDto payslipInputCreationDto)
         {
-            if (id != payslip.PayslipId)
+            var staffIds = await _userInfoService.GetStaffIdsAsync();
+
+
+            if (staffIds.Count == 0)
             {
-                return BadRequest();
+                return BadRequest(new ProblemDetails { Title = "Nhân viên không tồn tại" });
             }
 
-            _context.Entry(payslip).State = EntityState.Modified;
-
-            try
+            foreach (var staffId in staffIds)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PayslipExists(id))
+                if (!await _personnelContractService.IsValidContractExist(staffId))
                 {
-                    return NotFound();
+                    return BadRequest(new ProblemDetails { Title = "Người dùng không có hợp đồng hợp lệ trong hệ thống" });
                 }
-                else
-                {
-                    throw;
-                }
+
+                await _payslipService.AddPayslipToDatabase(
+                staffId,
+                payslipInputCreationDto);
             }
 
-        [HttpGet]
-        public async Task<int> GetDeductedSalary(int staffId, int paidByDate, int month, int year)
+            return NoContent();
+        }
+
+        [HttpPost("departments/{departmentId}")]
+        public async Task<ActionResult<List<PayslipCreationDTO>>> CreatePayslipForDepartments(int departmentId, PayslipInputCreationDto payslipInputCreationDto)
         {
-            var logLeaves = await _context.LogLeaves
-                .Where(c =>
-                c.StaffId == staffId &&
-                c.Status.Contains("approved") &&
-                c.LeaveTypeId == 3 &&
-                c.LeaveStart.Month <= month &&
-                c.LeaveEnd.Month >= month &&
-                c.LeaveStart.Year == year)
-                .ToListAsync();
-
-            var leaveDays = 0;
-
-            foreach (var item in logLeaves)
+            if (!await _departmentService.IsDepartmentExist(departmentId))
             {
-                DateTime startDay = GetStartDay(month, item.LeaveStart);
-                DateTime endDay = GetEndDay(month, item.LeaveEnd);
-
-
-                var workingDays = await _context.TheCalendars.Where(c => c.TheDate >= startDay && c.TheDate <= endDay && c.IsWorking == 1).ToListAsync();
-
-                leaveDays = workingDays.Count;
+                return BadRequest(new ProblemDetails { Title = "Phòng ban không tồn tại" });
             }
 
-        // POST: api/Payslips
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Payslip>> PostPayslip(Payslip payslip)
+            var staffIds = await _userInfoService.GetStaffsOfDepartment(departmentId);
+
+            if (staffIds.Count == 0)
+            {
+                return BadRequest(new ProblemDetails { Title = "Nhân viên không tồn tại" });
+            }
+
+            foreach (var staffId in staffIds)
+            {
+                if (!await _personnelContractService.IsValidContractExist(staffId))
+                {
+                    return BadRequest(new ProblemDetails { Title = "Người dùng không có hợp đồng hợp lệ trong hệ thống" });
+                }
+
+                var returnValue = await _payslipService.AddPayslipToDatabase(
+                staffId,
+                payslipInputCreationDto);
+            }
+            return NoContent();
+        }
+
+        [HttpPut("{payslipId}")]
+        public async Task<ActionResult<PayslipDTO>> UpdatePayslip(
+            int payslipId,
+            PayslipUpdateDTO payslipUpdateDTO)
         {
-          if (_context.Payslips == null)
-          {
-              return Problem("Entity set 'SwpProjectContext.Payslips'  is null.");
-          }
-            _context.Payslips.Add(payslip);
+            if (!await _payslipService.IsPayslipExist(payslipId))
+            {
+                return BadRequest(new ProblemDetails { Title = "Bảng lương không tồn tại" });
+            }
+
+            var payslip = await _context.Payslips
+                .Where(c => c.PayslipId == payslipId)
+                .FirstOrDefaultAsync();
+            payslipUpdateDTO.ChangeAt = DateTime.UtcNow.AddHours(7);
+            _mapper.Map(payslipUpdateDTO, payslip);
+
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPayslip", new { id = payslip.PayslipId }, payslip);
+
+            return NoContent();
         }
 
-        // DELETE: api/Payslips/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePayslip(int id)
+        [HttpPatch("{payslipId}")]
+        public async Task<ActionResult<PayslipDTO>> PartialUpdatePayslip(
+            int payslipId,
+            JsonPatchDocument<PayslipUpdateDTO> jsonPatchDocument)
         {
-            if (_context.Payslips == null)
+            if (!await _payslipService.IsPayslipExist(payslipId))
             {
-                return NotFound();
-            }
-            var payslip = await _context.Payslips.FindAsync(id);
-            if (payslip == null)
-            {
-                return NotFound();
+                return BadRequest(new ProblemDetails { Title = "Bảng lương không tồn tại" });
             }
 
-            _context.Payslips.Remove(payslip);
+            var payslip = await _context.Payslips
+                .Where(c => c.PayslipId == payslipId)
+                .FirstOrDefaultAsync();
+
+            if (payslip == null)
+            {
+                return BadRequest(new ProblemDetails { Title = "Bảng lương không tồn tại" });
+
+            }
+
+            payslip.ChangeAt = DateTime.UtcNow.AddHours(7);
+
+            var payslipPatch = _mapper.Map<PayslipUpdateDTO>(payslip);
+
+            jsonPatchDocument.ApplyTo(payslipPatch);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+
+            }
+            if (!TryValidateModel(payslipPatch))
+            {
+                return BadRequest(ModelState);
+            }
+
+            _mapper.Map(payslipPatch, payslip);
+
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool PayslipExists(int id)
+        [HttpGet("filters")]
+        public async Task<IActionResult> GetFilter()
         {
             var departments = await _context.Payslips
                 .Include(c => c.Staff)
