@@ -206,7 +206,8 @@ namespace HumanResourceapi.Controllers
 
             var payslipPatch = _mapper.Map<PayslipUpdateDTO>(payslip);
 
-            jsonPatchDocument.ApplyTo(payslipPatch);
+            jsonPatchDocument.ApplyTo(payslipPatch, ModelState);
+
 
             if (!ModelState.IsValid)
             {
