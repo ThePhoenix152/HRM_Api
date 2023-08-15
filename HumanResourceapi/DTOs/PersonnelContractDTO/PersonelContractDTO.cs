@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HumanResourceapi.DTOs.UserInforDTO;
-using HumanResourceapi.Models;
+using HumanResoureapi.Models;
 
 namespace HumanResourceapi.DTOs.PersonnelContractDTO
 {

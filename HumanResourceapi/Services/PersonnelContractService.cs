@@ -1,5 +1,5 @@
 ﻿using HumanResourceapi.DTOs.PersonnelContractDTO;
-using HumanResourceapi.Models;
+using HumanResoureapi.Models;
 using HumanResourceapi.Extensions;
 using HumanResourceapi.RequestHelpers;
 using AutoMapper;
@@ -11,19 +11,16 @@ namespace HumanResourceapi.Services
   {
     private readonly SwpProjectContext _context;
     private readonly IMapper _mapper;
-    private readonly TheCalendarService _theCalendarService;
     private readonly UserInfoService _userInfoService;
 
     public PersonnelContractService(
         SwpProjectContext context,
         IMapper mapper,
-        TheCalendarService theCalendarService,
         UserInfoService userInfoService
         )
     {
       _context = context ?? throw new ArgumentNullException(nameof(context));
       _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-      _theCalendarService = theCalendarService ?? throw new ArgumentNullException(nameof(theCalendarService));
       _userInfoService = userInfoService ?? throw new ArgumentNullException(nameof(userInfoService));
     }
 

@@ -1,4 +1,3 @@
-using HumanResourceapi.Models;
 using HumanResoureapi.Models;
 
 namespace HumanResoureapi.DTOs.UserInforDTO

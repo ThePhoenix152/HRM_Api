@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.EntityFrameworkCore;s
+using Microsoft.EntityFrameworkCore;
 using HumanResoureapi.Models;
 using AutoMapper;
 using HumanResourceapi.Services;
@@ -23,7 +23,7 @@ namespace HumanResourceapi.Controllers
         public PayslipService _payslipService;
         public UserInfoService _userInfoService;
         public PersonnelContractService _personnelContractService;
-        public LogLeaveService _logLeaveService;
+
         public DepartmentService _departmentService;
 
         public PayslipsController(
@@ -32,7 +32,7 @@ namespace HumanResourceapi.Controllers
             PayslipService payslipService,
             UserInfoService userInfoService,
             PersonnelContractService personnelContractService,
-            LogLeaveService logLeaveService,
+
             DepartmentService departmentService
             )
         {
@@ -40,7 +40,6 @@ namespace HumanResourceapi.Controllers
             _payslipService = payslipService ?? throw new ArgumentNullException(nameof(payslipService));
             _userInfoService = userInfoService ?? throw new ArgumentNullException(nameof(userInfoService));
             _personnelContractService = personnelContractService ?? throw new ArgumentNullException(nameof(personnelContractService));
-            _logLeaveService = logLeaveService ?? throw new ArgumentNullException(nameof(logLeaveService));
             _departmentService = departmentService ?? throw new ArgumentNullException(nameof(departmentService));
             _context = context ?? throw new ArgumentNullException(nameof(context));
 

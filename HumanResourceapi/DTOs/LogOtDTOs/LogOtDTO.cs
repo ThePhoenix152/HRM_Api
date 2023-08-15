@@ -1,5 +1,5 @@
 using HumanResourceapi.DTOs.StaffDtos;
-using HumanResourceapi.Models;
+using HumanResoureapi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

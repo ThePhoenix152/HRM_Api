@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HumanResourceapi.DTOs.StaffDtos;
 using HumanResourceapi.DTOs.UserInforDTO;
-using HumanResourceapi.Models;
+using HumanResoureapi.Models;
 
 namespace HumanResourceapi.DTOs.LogLeaveDTO
 {

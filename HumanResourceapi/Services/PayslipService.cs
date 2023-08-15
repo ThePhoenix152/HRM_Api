@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using HumanResourceapi.DTOs.PayslipDTOs;
 using HumanResourceapi.DTOs.PersonnelContractDTO;
-using HumanResourceapi.Models;
+using HumanResoureapi.Models;
 using HumanResourceapi.Extensions;
 using HumanResourceapi.RequestHelpers;
 using AutoMapper;
@@ -22,28 +22,22 @@ namespace HumanResourceapi.Services
         private readonly ILogger _logger;
         private readonly PersonnelContractService _personnelContractService;
         private readonly LogOtService _logOtService;
-        private readonly LogLeaveService _logLeaveService;
         private readonly AllowanceService _allowanceService;
-        private readonly TheCalendarService _theCalendarService;
-
+        
         public PayslipService(
             SwpProjectContext context,
             IMapper mapper,
             ILogger<PayslipService> logger,
             PersonnelContractService personnelContractService,
             LogOtService logOtService,
-            LogLeaveService logLeaveService,
-            AllowanceService allowanceService,
-            TheCalendarService theCalendarService
+            AllowanceService allowanceService
             )
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _personnelContractService = personnelContractService ?? throw new ArgumentNullException(nameof(personnelContractService));
             _logOtService = logOtService ?? throw new ArgumentNullException(nameof(logOtService));
-            _logLeaveService = logLeaveService ?? throw new ArgumentNullException(nameof(logLeaveService));
             _allowanceService = allowanceService ?? throw new ArgumentNullException(nameof(allowanceService));
-            _theCalendarService = theCalendarService ?? throw new ArgumentNullException(nameof(theCalendarService));
             _context = context ?? throw new ArgumentNullException(nameof(context));
 
         }
@@ -75,7 +69,7 @@ namespace HumanResourceapi.Services
 
             foreach (var taxDetail in result)
             {
-                var taxDetailEntity = _mapper.Map<TaxDetail>(taxDetail);
+                var taxDetailEntity = _mapper.Map<UserTax>(taxDetail);
 
 
                 payslipInfor.TaxDetails.Add(taxDetailEntity);

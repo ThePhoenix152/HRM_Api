@@ -1,4 +1,4 @@
-using HumanResourceapi.Models;
+using HumanResoureapi.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

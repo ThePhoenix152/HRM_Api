@@ -1,5 +1,5 @@
 ﻿using HumanResourceapi.DTOs.LogOtDTOs;
-using HumanResourceapi.Models;
+using HumanResoureapi.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 

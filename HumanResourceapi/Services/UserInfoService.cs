@@ -1,4 +1,4 @@
-﻿using HumanResourceapi.Models;
+﻿using HumanResoureapi.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +10,7 @@ namespace HumanResourceapi.Services
         private readonly IMapper _mapper;
 
         public UserInfoService
-            (SwpProjectContext context, IMapper mapper, TheCalendarService theCalendarService)
+            (SwpProjectContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));

@@ -1,5 +1,5 @@
 ﻿using HumanResourceapi.DTOs.DepartmentDTO;
-using HumanResourceapi.Models;
+using HumanResoureapi.Models;
 
 namespace HumanResourceapi.DTOs.StaffDtos
 {
