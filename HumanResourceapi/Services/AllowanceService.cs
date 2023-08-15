@@ -12,20 +12,17 @@ namespace HumanResourceapi.Services
     {
         private readonly SwpProjectContext _context;
         private readonly IMapper _mapper;
-        private readonly TheCalendarService _theCalendarService;
         private readonly UserInfoService _userInfoService;
 
         public AllowanceService(
             SwpProjectContext context,
             IMapper mapper,
-            TheCalendarService theCalendarService,
             UserInfoService userInfoService
 
             )
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _theCalendarService = theCalendarService ?? throw new ArgumentNullException(nameof(theCalendarService));
             _userInfoService = userInfoService ?? throw new ArgumentNullException(nameof(userInfoService));
         }
         public async Task<List<AllowanceDTO>> GetAllowanceDTOs()

@@ -9,6 +9,7 @@ using HumanResoureapi.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using HumanResourceapi.Models;
 
 namespace HumanResourceapi.Services
 {
