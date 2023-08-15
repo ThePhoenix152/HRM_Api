@@ -88,21 +88,7 @@ namespace HumanResourceapi.Services
             return returnLogOt;
         }
 
-        public async Task CreateLogOT(int staffId, LogOtCreationDTO logOtCreationDTO)
-        {
-
-            var HolidayDates = await _theCalendarService.GetHolidayDates(logOtCreationDTO.LogStart, logOtCreationDTO.LogEnd);
-
-            var WeekendDays = HolidayDates.Where(c => c.Percent == (decimal)2.0).ToList();
-            var Holidays = HolidayDates.Where(c => c.Percent == (decimal)3.0).ToList();
-            var HolidaysAndWeekends = HolidayDates.Where(c => c.Percent == (decimal)4.0).ToList();
-
-            await AddLogOt(staffId, logOtCreationDTO, WeekendDays);
-            await AddLogOt(staffId, logOtCreationDTO, Holidays);
-            await AddLogOt(staffId, logOtCreationDTO, HolidaysAndWeekends);
-
-            return;
-        }
+    
 
         public async Task AddLogOt(int staffId, LogOtCreationDTO logOtCreation, List<TheCalendar> theCalendar)
         {
@@ -184,9 +170,9 @@ namespace HumanResourceapi.Services
             logOtCreation.CreateAt = DateTime.UtcNow.AddHours(7);
             logOtCreation.ChangeStatusTime = DateTime.UtcNow.AddHours(7);
 
-            var WeekendsEntity = _mapper.Map<LogOt>(logOtCreation);
+            var WeekendsEntity = _mapper.Map<Otapplication>(logOtCreation);
 
-            staffInfo.LogOts.Add(WeekendsEntity);
+            staffInfo.Otapplications.Add(WeekendsEntity);
 
             await _context.SaveChangesAsync();
         }
@@ -261,7 +247,7 @@ namespace HumanResourceapi.Services
 
         public async Task<bool> IsLogOtExist(int logOtId)
         {
-            return await _context.LogOts.AnyAsync(c => c.OtLogId == logOtId);
+            return await _context.Otapplications.AnyAsync(c => c.OtLogId == logOtId);
         }
 
         public async Task<bool> IsDuplicateLogOt(int staffId, int? logOtId, DateTime startDate, DateTime endDate)
@@ -271,7 +257,7 @@ namespace HumanResourceapi.Services
             // Check for duplicates within the entire date range of the LogOt object
             if (logOtId != null)
             {
-                isDuplicate = await _context.LogOts.AnyAsync(c =>
+                isDuplicate = await _context.Otapplications.AnyAsync(c =>
                 c.OtLogId != logOtId &&
                 c.StaffId == staffId &&
                 c.LogStart < endDate && c.LogEnd > startDate
@@ -279,7 +265,7 @@ namespace HumanResourceapi.Services
             }
             else if (logOtId == null)
             {
-                isDuplicate = await _context.LogOts.AnyAsync(c =>
+                isDuplicate = await _context.Otapplications.AnyAsync(c =>
                 c.StaffId == staffId &&
                 c.LogStart < endDate && c.LogEnd > startDate
                 );
@@ -289,7 +275,7 @@ namespace HumanResourceapi.Services
         }
         public async Task UpdateLogOt(int staffId, int logOtId, LogOtUpdateDTO logOtUpdateDTO)
         {
-            var logOt = await _context.LogOts
+            var logOt = await _context.Otapplications
                                         .Where(c => c.StaffId == staffId && c.OtLogId == logOtId)
                                         .FirstOrDefaultAsync();
 
@@ -317,7 +303,7 @@ namespace HumanResourceapi.Services
 
         public async Task<int> OtSalary(int staffId, int month, int year)
         {
-            var logOts = await _context.LogOts
+            var Otapplications = await _context.Otapplications
                 .Where(c =>
                     c.StaffId == staffId &&
                     c.LogStart.Month == month &&
@@ -325,7 +311,7 @@ namespace HumanResourceapi.Services
                     c.Status.ToLower().Equals("approved"))
                 .ToListAsync();
 
-            var OtSalary = OTapplications.Sum(c => c.Amount);
+            var OtSalary = Otapplications.Sum(c => c.Amount);
 
             if (OtSalary != null)
             {
@@ -338,7 +324,7 @@ namespace HumanResourceapi.Services
         public async Task<UserInfor> GetUserInforEntityByStaffId(int StaffId)
         {
             return await _context.UserInfors
-                                .Include(c => c.OTapplications)
+                                .Include(c => c.BankAccount)
                                 .Where(c => c.StaffId == StaffId && c.AccountStatus == true)
                                 .FirstOrDefaultAsync();
         }

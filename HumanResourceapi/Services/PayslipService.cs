@@ -9,6 +9,7 @@ using Azure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Logging;
+using API.Services;
 
 namespace HumanResourceapi.Services
 {
@@ -23,7 +24,9 @@ namespace HumanResourceapi.Services
         private readonly PersonnelContractService _personnelContractService;
         private readonly LogOtService _logOtService;
         private readonly AllowanceService _allowanceService;
-        
+        private readonly LogLeaveService _logLeaveService;
+
+
         public PayslipService(
             SwpProjectContext context,
             IMapper mapper,
@@ -63,14 +66,6 @@ namespace HumanResourceapi.Services
 
             var payslipInfor = await _context.Payslips.Where(c => c.StaffId == staffId && c.PayslipId == payslipDTO.PayslipId)
                 .FirstOrDefaultAsync();
-
-            foreach (var taxDetail in result)
-            {
-                var taxDetailEntity = _mapper.Map<UserTax>(taxDetail);
-
-
-                payslipInfor.UserTaxes.Add(taxDetailEntity);
-            }
 
             await _context.SaveChangesAsync();
 
@@ -397,7 +392,7 @@ namespace HumanResourceapi.Services
 
         public async Task<double> GetLogOtHours(int StaffId)
         {
-            var logOtHours = await _context.LogOts
+            var logOtHours = await _context.Otapplications
                 .Where(c =>
                     c.StaffId == StaffId &&
                     c.Status.ToLower().Equals("approved"))
@@ -412,7 +407,7 @@ namespace HumanResourceapi.Services
 
         public async Task<int> GetLogOtDays(int StaffId)
         {
-            var logOtStaff = await _context.LogOts
+            var logOtStaff = await _context.Otapplications
                 .Where(c =>
                     c.StaffId == StaffId &&
                     c.Status.ToLower().Equals("approved"))
@@ -465,8 +460,6 @@ namespace HumanResourceapi.Services
             var payslips = _context.Payslips
                 .Include(c => c.Staff)
                 .ThenInclude(c => c.Department)
-                .Include(c => c.UserTaxes)
-                .ThenInclude(c => c.TaxLevel)
                 .Sort(payslipParams.OrderBy)
                 .Search(payslipParams.SearchTerm)
                 .Filter(payslipParams.Departments)
@@ -509,36 +502,7 @@ namespace HumanResourceapi.Services
             return await _context.Payslips
                 .AnyAsync(c =>  c.PayslipId == payslipId);
         }
-        public async Task<int> GetDeductedSalary(int staffId, int paidByDate, int month, int year)
-        {
-            var logLeaves = await _context.LeaveApplications
-                .Where(c =>
-                c.StaffId == staffId &&
-                c.Status.Contains("approved") &&
-                c.LeaveTypeId == 3 &&
-                c.LeaveStart.Month <= month &&
-                c.LeaveEnd.Month >= month &&
-                c.LeaveStart.Year == year)
-                .ToListAsync();
-
-            var leaveDays = 0;
-
-            foreach (var item in logLeaves)
-            {
-                DateTime startDay = GetStartDay(month, item.LeaveStart);
-                DateTime endDay = GetEndDay(month, item.LeaveEnd);
-
-
-                var workingDays = await _theCalendarService
-                     .GetWorkingDays(startDay, endDay);
-
-                leaveDays = workingDays.Count;
-            }
-
-            int totalDeductedSalary = leaveDays * paidByDate;
-
-            return totalDeductedSalary;
-        }
+       
 
         public async Task<PayslipDTO> GetPayslipOfStaffByPayslipId(int staffId, int payslipId)
         {

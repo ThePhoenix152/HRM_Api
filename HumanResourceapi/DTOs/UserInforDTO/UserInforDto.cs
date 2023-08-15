@@ -8,8 +8,7 @@ namespace HumanResourceapi.DTOs.UserInforDTO
 {
   public class UserInforDto
   {
-    public int StaffId { get; set; }
-    public string Id { get; set; }
+    public string StaffId { get; set; }
     public string LastName { get; set; } = null!;
     public string ImageFile { get; set; }
     public string FirstName { get; set; } = null!;
