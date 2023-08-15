@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 using HumanResourceapi.Models;
-using HumanResourceapi.Services;
 using AutoMapper;
+using HumanResourceapi.Services;
 using HumanResourceapi.DTOs.PayslipDTOs;
 using HumanResourceapi.RequestHelpers;
 
@@ -19,11 +20,11 @@ namespace HumanResourceapi.Controllers
     {
         private readonly SwpProjectContext _context;
         private readonly IMapper _mapper;
-        private readonly PayslipService _payslipService;
-        private readonly UserInfoService _userInfoService;
-        private readonly PersonnelContractService _personnelContractService;
-        private readonly LogLeaveService _logLeaveService;
-        private readonly DepartmentService _departmentService;
+        public PayslipService _payslipService;
+        public UserInfoService _userInfoService;
+        public PersonnelContractService _personnelContractService;
+        public LogLeaveService _logLeaveService;
+        public DepartmentService _departmentService;
 
         public PayslipsController(
             SwpProjectContext context,
@@ -44,8 +45,6 @@ namespace HumanResourceapi.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
 
         }
-
-
         [HttpGet]
         public async Task<ActionResult<PagedList<PayslipDTO>>> GetPayslips(
             [FromQuery] PayslipParams payslipParams
@@ -183,48 +182,49 @@ namespace HumanResourceapi.Controllers
             return NoContent();
         }
 
-        //[HttpPatch("{payslipId}")]
-        //public async Task<ActionResult<PayslipDTO>> PartialUpdatePayslip(
-        //    int payslipId,
-        //    JsonPatchDocument<PayslipUpdateDTO> jsonPatchDocument)
-        //{
-        //    if (!await _payslipService.IsPayslipExist(payslipId))
-        //    {
-        //        return BadRequest(new ProblemDetails { Title = "Bảng lương không tồn tại" });
-        //    }
+        [HttpPatch("{payslipId}")]
+        public async Task<ActionResult<PayslipDTO>> PartialUpdatePayslip(
+            int payslipId,
+            JsonPatchDocument<PayslipUpdateDTO> jsonPatchDocument)
+        {
+            if (!await _payslipService.IsPayslipExist(payslipId))
+            {
+                return BadRequest(new ProblemDetails { Title = "Bảng lương không tồn tại" });
+            }
 
-        //    var payslip = await _context.Payslips
-        //        .Where(c => c.PayslipId == payslipId)
-        //        .FirstOrDefaultAsync();
+            var payslip = await _context.Payslips
+                .Where(c => c.PayslipId == payslipId)
+                .FirstOrDefaultAsync();
 
-        //    if(payslip == null)
-        //    {
-        //        return BadRequest(new ProblemDetails { Title = "Bảng lương không tồn tại" });
+            if (payslip == null)
+            {
+                return BadRequest(new ProblemDetails { Title = "Bảng lương không tồn tại" });
 
-        //    }
+            }
 
-        //    payslip.ChangeAt = DateTime.UtcNow.AddHours(7);
+            payslip.ChangeAt = DateTime.UtcNow.AddHours(7);
 
-        //    var payslipPatch = _mapper.Map<PayslipUpdateDTO>(payslip);
+            var payslipPatch = _mapper.Map<PayslipUpdateDTO>(payslip);
 
-        //    jsonPatchDocument.ApplyTo(payslipPatch, ModelState);
+            jsonPatchDocument.ApplyTo(payslipPatch, ModelState);
 
-        //    if(!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
 
-        //    }
-        //    if (!TryValidateModel(payslipPatch))
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
 
-        //    _mapper.Map(payslipPatch, payslip);
+            }
+            if (!TryValidateModel(payslipPatch))
+            {
+                return BadRequest(ModelState);
+            }
 
-        //    await _context.SaveChangesAsync();
+            _mapper.Map(payslipPatch, payslip);
 
-        //    return NoContent();
-        //}
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
 
         [HttpGet("filters")]
         public async Task<IActionResult> GetFilter()
