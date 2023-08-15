@@ -39,16 +39,10 @@ namespace HumanResourceapi.Services
             LogOtParams logOtParams
             )
         {
-            var logOtList = _context.LogOts
-                    .Include(c => c.Staff)
-                    .ThenInclude(c => c.Department)
-                    .Include(c => c.OtType)
-                    .OrderByDescending(c => c.OtLogId)
-                    .Search(logOtParams.SearchTerm)
-                    .Filter(logOtParams.Departments)
-                    .AsQueryable();
+            var logOtList = _context.Otapplications
+                    .OrderByDescending(c => c.OtLogId);
 
-            var returnLogOts = await PagedList<LogOt>.ToPagedList(
+            var returnLogOts = await PagedList<Otapplication>.ToPagedList(
                 logOtList,
                 logOtParams.PageNumber,
                 logOtParams.PageSize
@@ -71,7 +65,7 @@ namespace HumanResourceapi.Services
 
         public async Task<List<LogOtDTO>> GetLogOtByStaffIdAsync(int StaffId)
         {
-            var logOtList = await _context.LogOts
+            var logOtList = await _context.Otapplications
                 .Include(c => c.Staff)
                 .Include(c => c.OtType)
                 .Where(c => c.StaffId == StaffId)
@@ -84,9 +78,7 @@ namespace HumanResourceapi.Services
 
         public async Task<LogOtDTO> GetLogOtById(int logOtId)
         {
-            var logOt = await _context.LogOts
-                    .Include(c => c.Staff)
-                    .Include(c => c.OtType)
+            var logOt = await _context.Otapplications
                     .OrderByDescending(c => c.OtLogId)
                     .Where(c => c.OtLogId == logOtId)
                     .FirstOrDefaultAsync();
@@ -310,7 +302,7 @@ namespace HumanResourceapi.Services
 
         public async Task<int> GetOtDays(int staffId, int month, int year)
         {
-            var logOts = await _context.LogOts
+            var logOts = await _context.Otapplications
                 .Where(c =>
                     c.StaffId == staffId &&
                     c.LogStart.Month == month &&
@@ -333,7 +325,7 @@ namespace HumanResourceapi.Services
                     c.Status.ToLower().Equals("approved"))
                 .ToListAsync();
 
-            var OtSalary = logOts.Sum(c => c.Amount);
+            var OtSalary = OTapplications.Sum(c => c.Amount);
 
             if (OtSalary != null)
             {
@@ -346,7 +338,7 @@ namespace HumanResourceapi.Services
         public async Task<UserInfor> GetUserInforEntityByStaffId(int StaffId)
         {
             return await _context.UserInfors
-                                .Include(c => c.LogOts)
+                                .Include(c => c.OTapplications)
                                 .Where(c => c.StaffId == StaffId && c.AccountStatus == true)
                                 .FirstOrDefaultAsync();
         }

@@ -61,10 +61,7 @@ namespace HumanResourceapi.Services
                 payslipInputCreationDto);
 
 
-            var payslipInfor = await _context.Payslips
-                .Include(c => c.TaxDetails)
-                .ThenInclude(c => c.TaxLevelNavigation)
-                .Where(c => c.StaffId == staffId && c.PayslipId == payslipDTO.PayslipId)
+            var payslipInfor = await _context.Payslips.Where(c => c.StaffId == staffId && c.PayslipId == payslipDTO.PayslipId)
                 .FirstOrDefaultAsync();
 
             foreach (var taxDetail in result)
@@ -72,7 +69,7 @@ namespace HumanResourceapi.Services
                 var taxDetailEntity = _mapper.Map<UserTax>(taxDetail);
 
 
-                payslipInfor.TaxDetails.Add(taxDetailEntity);
+                payslipInfor.UserTaxes.Add(taxDetailEntity);
             }
 
             await _context.SaveChangesAsync();
@@ -383,30 +380,6 @@ namespace HumanResourceapi.Services
             return companyInsuranceDto;
         }
 
-        public async Task<int> GetNumberWeekDaysInMonth(int month, int year)
-        {
-            var weekDays = await _context.DateDimensions
-                .Where(c =>
-                    c.IsWeekend == 0 &&
-                    c.TheMonth == month &&
-                    c.TheYear == year)
-                .CountAsync();
-
-            return weekDays;
-        }
-
-        public async Task<int> GetNumberHolidaysInMonth(int month, int year)
-        {
-            var holidays = await _context.HolidayDimensions
-                .Where(c =>
-                c.TheDate.Month == month &&
-                c.TheDate.Year == year)
-                .CountAsync();
-
-            return holidays;
-        }
-
-
         public async Task<int> GetPaidByDate(int month, int year, int salary)
         {
             var StandardWorkDays = await _context.TheCalendars
@@ -451,7 +424,7 @@ namespace HumanResourceapi.Services
 
         public async Task<int> GetLogLeaveHours(int StaffId)
         {
-            var LeaveDays = await _context.LogLeaves.ToListAsync();
+            var LeaveDays = await _context.LeaveApplications.Where(c => c.StaffId == StaffId).ToListAsync();
 
             var LogLeavesHours = LeaveDays.Sum(c => c.LeaveDays) * 8;
 
@@ -460,7 +433,7 @@ namespace HumanResourceapi.Services
 
         public async Task<int> GetLogLeaveDays(int StaffId)
         {
-            var LeaveDays = await _context.LogLeaves.ToListAsync();
+            var LeaveDays = await _context.LeaveApplications.Where(c => c.StaffId == StaffId).ToListAsync();
 
 
             return (int)LeaveDays.Sum(c => c.LeaveDays);
@@ -492,8 +465,8 @@ namespace HumanResourceapi.Services
             var payslips = _context.Payslips
                 .Include(c => c.Staff)
                 .ThenInclude(c => c.Department)
-                .Include(c => c.TaxDetails)
-                .ThenInclude(c => c.TaxLevelNavigation)
+                .Include(c => c.UserTaxes)
+                .ThenInclude(c => c.TaxLevel)
                 .Sort(payslipParams.OrderBy)
                 .Search(payslipParams.SearchTerm)
                 .Filter(payslipParams.Departments)
@@ -517,10 +490,6 @@ namespace HumanResourceapi.Services
         public async Task<List<PayslipDTO>> GetPayslipOfStaff(int staffId)
         {
             var payslips = await _context.Payslips
-                .Include(c => c.Staff)
-                .ThenInclude(c => c.Department)
-                .Include(c => c.TaxDetails)
-                    .ThenInclude(c => c.TaxLevelNavigation)
                 .Where(c => c.StaffId == staffId)
                 .OrderByDescending(c => c.PayslipId)
                 .ToListAsync();
@@ -540,13 +509,41 @@ namespace HumanResourceapi.Services
             return await _context.Payslips
                 .AnyAsync(c =>  c.PayslipId == payslipId);
         }
+        public async Task<int> GetDeductedSalary(int staffId, int paidByDate, int month, int year)
+        {
+            var logLeaves = await _context.LeaveApplications
+                .Where(c =>
+                c.StaffId == staffId &&
+                c.Status.Contains("approved") &&
+                c.LeaveTypeId == 3 &&
+                c.LeaveStart.Month <= month &&
+                c.LeaveEnd.Month >= month &&
+                c.LeaveStart.Year == year)
+                .ToListAsync();
+
+            var leaveDays = 0;
+
+            foreach (var item in logLeaves)
+            {
+                DateTime startDay = GetStartDay(month, item.LeaveStart);
+                DateTime endDay = GetEndDay(month, item.LeaveEnd);
+
+
+                var workingDays = await _theCalendarService
+                     .GetWorkingDays(startDay, endDay);
+
+                leaveDays = workingDays.Count;
+            }
+
+            int totalDeductedSalary = leaveDays * paidByDate;
+
+            return totalDeductedSalary;
+        }
 
         public async Task<PayslipDTO> GetPayslipOfStaffByPayslipId(int staffId, int payslipId)
         {
             var payslip = await _context.Payslips
                 .Include(c => c.Staff)
-                .Include(c => c.TaxDetails)
-                .ThenInclude(c => c.TaxLevelNavigation)
                 .Where(c => c.StaffId == staffId && c.PayslipId == payslipId)
                 .FirstOrDefaultAsync();
 
