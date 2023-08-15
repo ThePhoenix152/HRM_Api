@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HumanResourceapi.Models;
+namespace HumanResoureapi.Models;
 
 public partial class UserInfor
 {
     public int StaffId { get; set; }
-
-    public string? Id { get; set; }
 
     public string? ImageFile { get; set; }
 
@@ -45,19 +43,21 @@ public partial class UserInfor
 
     public int? UserAccountUserId { get; set; }
 
+    public string? Password { get; set; }
+
+    public int? Roleid { get; set; }
+
+    public string? Email { get; set; }
+
     public virtual Department? Department { get; set; }
 
-    public virtual ICollection<LeaveDayDetail> LeaveDayDetails { get; set; } = new List<LeaveDayDetail>();
+    public virtual ICollection<LeaveApplication> LeaveApplications { get; set; } = new List<LeaveApplication>();
 
-    public virtual ICollection<LogLeave> LogLeaves { get; set; } = new List<LogLeave>();
-
-    public virtual ICollection<LogOt> LogOts { get; set; } = new List<LogOt>();
+    public virtual ICollection<Otapplication> Otapplications { get; set; } = new List<Otapplication>();
 
     public virtual ICollection<Payslip> Payslips { get; set; } = new List<Payslip>();
 
     public virtual ICollection<PersonnelContract> PersonnelContracts { get; set; } = new List<PersonnelContract>();
 
-    public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
-
-    public virtual UserAccount? UserAccountUser { get; set; }
+    public virtual Role? Role { get; set; }
 }

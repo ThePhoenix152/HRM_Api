@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HumanResourceapi.Models;
+namespace HumanResoureapi.Models;
 
 public partial class OtType
 {
@@ -11,5 +11,5 @@ public partial class OtType
 
     public double? TypePercentage { get; set; }
 
-    public virtual ICollection<LogOt> LogOts { get; set; } = new List<LogOt>();
+    public virtual ICollection<Otapplication> Otapplications { get; set; } = new List<Otapplication>();
 }

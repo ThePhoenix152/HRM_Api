@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HumanResourceapi.Models;
+namespace HumanResoureapi.Models;
 
 public partial class Payslip
 {
@@ -23,12 +23,6 @@ public partial class Payslip
 
     public int? OtTotal { get; set; }
 
-    public int? Bhxhemp { get; set; }
-
-    public int? Bhytemp { get; set; }
-
-    public int? Bhtnemp { get; set; }
-
     public int? SalaryBeforeTax { get; set; }
 
     public int? SelfDeduction { get; set; }
@@ -46,12 +40,6 @@ public partial class Payslip
     public int? NetStandardSalary { get; set; }
 
     public int? NetActualSalary { get; set; }
-
-    public int? Bhxhcomp { get; set; }
-
-    public int? Bhytcomp { get; set; }
-
-    public int? Bhtncomp { get; set; }
 
     public int? TotalCompInsured { get; set; }
 
@@ -72,6 +60,4 @@ public partial class Payslip
     public string? Status { get; set; }
 
     public virtual UserInfor Staff { get; set; } = null!;
-
-    public virtual ICollection<TaxDetail> TaxDetails { get; set; } = new List<TaxDetail>();
 }

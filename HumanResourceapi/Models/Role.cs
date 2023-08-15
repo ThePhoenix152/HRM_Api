@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HumanResourceapi.Models;
+namespace HumanResoureapi.Models;
 
 public partial class Role
 {
-    public string RoleId { get; set; } = null!;
+    public int RoleId { get; set; }
 
     public string? RoleName { get; set; }
 
-    public virtual ICollection<UserAccount> UserAccounts { get; set; } = new List<UserAccount>();
+    public virtual ICollection<UserInfor> UserInfors { get; set; } = new List<UserInfor>();
 }

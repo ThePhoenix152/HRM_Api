@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HumanResourceapi.Models;
+namespace HumanResoureapi.Models;
 
-public partial class TaxDetail
+public partial class UserTax
 {
-    public int TaxDetailId { get; set; }
-
     public int? PayslipId { get; set; }
 
     public int? TaxLevel { get; set; }
-
-    public int? Amount { get; set; }
 
     public virtual Payslip? Payslip { get; set; }
 

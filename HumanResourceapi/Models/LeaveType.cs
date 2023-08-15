@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HumanResourceapi.Models;
+namespace HumanResoureapi.Models;
 
 public partial class LeaveType
 {
@@ -15,7 +15,5 @@ public partial class LeaveType
 
     public bool? IsSalary { get; set; }
 
-    public virtual ICollection<LeaveDayDetail> LeaveDayDetails { get; set; } = new List<LeaveDayDetail>();
-
-    public virtual ICollection<LogLeave> LogLeaves { get; set; } = new List<LogLeave>();
+    public virtual ICollection<LeaveApplication> LeaveApplications { get; set; } = new List<LeaveApplication>();
 }

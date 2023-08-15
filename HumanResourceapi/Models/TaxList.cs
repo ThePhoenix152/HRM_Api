@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HumanResourceapi.Models;
+namespace HumanResoureapi.Models;
 
 public partial class TaxList
 {
@@ -12,6 +12,4 @@ public partial class TaxList
     public int? TaxRange { get; set; }
 
     public double? TaxPercentage { get; set; }
-
-    public virtual ICollection<TaxDetail> TaxDetails { get; set; } = new List<TaxDetail>();
 }

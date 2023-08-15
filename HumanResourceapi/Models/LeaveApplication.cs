@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HumanResourceapi.Models;
+namespace HumanResoureapi.Models;
 
-public partial class LogLeave
+public partial class LeaveApplication
 {
     public int LeaveLogId { get; set; }
 
