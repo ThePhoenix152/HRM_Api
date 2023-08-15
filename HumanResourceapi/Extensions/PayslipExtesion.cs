@@ -1,4 +1,4 @@
-﻿using HumanResourceapi.Models;
+﻿using HumanResoureapi.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Net.NetworkInformation;
 

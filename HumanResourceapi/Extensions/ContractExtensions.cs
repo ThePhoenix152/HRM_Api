@@ -1,4 +1,4 @@
-﻿using HumanResourceapi.Models;
+﻿using HumanResoureapi.Models;
 
 namespace HumanResourceapi.Extensions
 {

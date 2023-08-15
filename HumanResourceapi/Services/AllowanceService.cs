@@ -1,6 +1,6 @@
 ﻿using HumanResourceapi.DTOs.AllowanceDTO;
 using HumanResourceapi.DTOs.PersonnelContractDTO;
-using HumanResourceapi.Models;
+using HumanResoureapi.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Contracts;

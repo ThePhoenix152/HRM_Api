@@ -1,6 +1,7 @@
 using HumanResourceapi.Models;
+using HumanResoureapi.Models;
 
-namespace HumanResourceapi.DTOs.UserInforDTO
+namespace HumanResoureapi.DTOs.UserInforDTO
 {
     public class PayslipDto
     {

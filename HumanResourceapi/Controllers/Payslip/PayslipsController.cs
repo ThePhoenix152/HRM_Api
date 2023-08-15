@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.EntityFrameworkCore;
-using HumanResourceapi.Models;
+using Microsoft.EntityFrameworkCore;s
+using HumanResoureapi.Models;
 using AutoMapper;
 using HumanResourceapi.Services;
 using HumanResourceapi.DTOs.PayslipDTOs;
