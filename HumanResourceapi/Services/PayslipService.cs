@@ -77,7 +77,7 @@ namespace HumanResourceapi.Services
                 PayslipInputCreationDto payslipInputCreationDto
             )
         {
-            int standardPayDay = 25;
+            int standardPayDay = 22;
 
             //Gross To Net
             var personnelContract = await _personnelContractService
@@ -98,12 +98,7 @@ namespace HumanResourceapi.Services
             //grossActualSalary
             var actualGrossSalary = (standardGrossSalary + allowancesSalary) - leavesDeductedSalary;
 
-            //taxable Salary
-            var standardTaxableSalary = personnelContract.TaxableSalary;
-            var actualTaxableSalary = standardTaxableSalary + allowancesSalary - leavesDeductedSalary;
-
-
-
+  
             //days Calculation: stardard works days, overtime days, leaves days (Include total type leaves days)
             int standardWorkDays = await GetStandardWorkDays(
                 payslipInputCreationDto.Month,
@@ -125,32 +120,14 @@ namespace HumanResourceapi.Services
                 payslipInputCreationDto.Year);
 
             //Tính bảo hiểm từng phần
-            var personalInsurance = PersonalInsuranceCalculate((int)actualTaxableSalary);
 
             //Thu nhập trước thuế (Tổng bảo hiểm cá nhân)
             //Gross Actual Salary - total 
-            int salaryBeforeTax = CalculatePretaxEarning(personalInsurance, actualGrossSalary);
 
 
             // Giảm trừ gia cảnh
             int selfDeduction = PersonalTaxDeduction;
             int familyDeduction = await _personnelContractService.GetFamilyAllowance(staffId);
-            int taxableIncome = await TaxableIncomeCalculation(salaryBeforeTax, staffId);
-
-
-
-            //Thue Thu Nhap Ca Nhan
-            var result = PersonalIncomeTaxCalculate(taxableIncome);
-
-
-            foreach (var item in result)
-            {
-                _logger.LogCritical(item.Amount.ToString());
-            }
-
-            int personalIncomeTax = (int)result.Sum(c => c.Amount);
-            //Net Salary
-            int standardNetSalary = (salaryBeforeTax - personalIncomeTax);
 
 
             // Lương thực nhận
@@ -158,12 +135,11 @@ namespace HumanResourceapi.Services
                 staffId,
                 payslipInputCreationDto.Month,
                 payslipInputCreationDto.Year);
-            int actualNetSalary = standardNetSalary + otSalary;
+            int actualNetSalary =  otSalary;
 
 
             //Nguoi su dung lao dong tra
-            CompanyInsuranceDTO companyInsuranceDto = CompanyInsuranceCalculate(actualGrossSalary, (int)actualTaxableSalary);
-            int actualCompPaid = (int)(companyInsuranceDto.NetSalary + otSalary);
+            int actualCompPaid = (int)( otSalary);
 
 
             DateTime payDay = new DateTime(payslipInputCreationDto.Year, payslipInputCreationDto.Month, standardPayDay);
@@ -177,17 +153,10 @@ namespace HumanResourceapi.Services
                 LeaveHours = leaveHours,
                 LeaveDays = leaveDays,
                 OtTotal = otSalary,
-                Bhxhemp = (int?)personalInsurance.SocialInsurance,
-                Bhytemp = (int?)personalInsurance.HealthInsurance,
-                Bhtnemp = (int?)personalInsurance.UnemploymentInsurance,
-                SalaryBeforeTax = salaryBeforeTax,
                 SelfDeduction = selfDeduction,
                 FamilyDeduction = familyDeduction,
-                TaxableSalary = actualTaxableSalary,
-                PersonalIncomeTax = personalIncomeTax,
                 TotalAllowance = allowancesSalary,
                 SalaryRecieved = actualNetSalary,
-                NetStandardSalary = standardNetSalary,
                 NetActualSalary = actualNetSalary,
                 Bhxhcomp = (int?)companyInsuranceDto.SocialInsurance,
                 Bhytcomp = (int?)companyInsuranceDto.HealthInsurance,
@@ -293,87 +262,8 @@ namespace HumanResourceapi.Services
 
             return result;
         }
-        private static int PERSONAL_MAX_SOCIAL_INSURANCE_FEE = 2384000;
-        private static int PERSONAL_MAX_HEALTH_INSURANCE_FEE = 447000;
-        private static int PERSONAL_MAX_UNEMPLOYEMENT_INSURANCE_FEE = 884000;
 
-        private static double PersonalSocialInsurance = 0.08;
-        private static double PersonalHealthInsurance = 0.015;
-        private static double PersonalUnemploymentInsurance = 0.01;
-        public InsuranceDTO PersonalInsuranceCalculate(int InsuranceSalary)
-        {
-            int SocialInsuranceDeduction = (int)(InsuranceSalary * PersonalSocialInsurance);
-            int HealthInsuranceDeduction = (int)(InsuranceSalary * PersonalHealthInsurance);
-            int UnemploymentInsuranceDeduction = (int)(InsuranceSalary * PersonalUnemploymentInsurance);
-
-            if (SocialInsuranceDeduction > PERSONAL_MAX_SOCIAL_INSURANCE_FEE)
-            {
-                SocialInsuranceDeduction = PERSONAL_MAX_SOCIAL_INSURANCE_FEE;
-            }
-
-            if (HealthInsuranceDeduction > PERSONAL_MAX_HEALTH_INSURANCE_FEE)
-            {
-                HealthInsuranceDeduction = PERSONAL_MAX_HEALTH_INSURANCE_FEE;
-            }
-
-            if (UnemploymentInsuranceDeduction > PERSONAL_MAX_UNEMPLOYEMENT_INSURANCE_FEE)
-            {
-                UnemploymentInsuranceDeduction = PERSONAL_MAX_UNEMPLOYEMENT_INSURANCE_FEE;
-            }
-
-            var InsuranceDeduction = new InsuranceDTO
-            {
-                SocialInsurance = SocialInsuranceDeduction,
-                UnemploymentInsurance = UnemploymentInsuranceDeduction,
-                HealthInsurance = HealthInsuranceDeduction,
-            };
-            return InsuranceDeduction;
-        }
-
-
-        private static int COMPANY_MAX_SOCIAL_INSURANCE_FEE = 5215000;
-        private static int COMPANY_MAX_HEALTH_INSURANCE_FEE = 894000;
-        private static int COMPANY_MAX_UNEMPLOYEMENT_INSURANCE_FEE = 884000;
-
-        private static double CompanySocialInsurance = 0.175;
-        private static double CompanyHealthInsurance = 0.03;
-        private static double CompanyUnemploymentInsurance = 0.01;
-        public CompanyInsuranceDTO CompanyInsuranceCalculate(int grossSalary, int taxableSalary)
-        {
-            int SocialInsuranceDeduction = (int)(taxableSalary * CompanySocialInsurance);
-            int HealthInsuranceDeduction = (int)(taxableSalary * CompanyHealthInsurance);
-            int UnemploymentInsuranceDeduction = (int)(taxableSalary * CompanyUnemploymentInsurance);
-
-            if (SocialInsuranceDeduction > COMPANY_MAX_SOCIAL_INSURANCE_FEE)
-            {
-                SocialInsuranceDeduction = COMPANY_MAX_SOCIAL_INSURANCE_FEE;
-            }
-
-            if (HealthInsuranceDeduction > COMPANY_MAX_HEALTH_INSURANCE_FEE)
-            {
-                HealthInsuranceDeduction = COMPANY_MAX_HEALTH_INSURANCE_FEE;
-            }
-
-            if (UnemploymentInsuranceDeduction > COMPANY_MAX_UNEMPLOYEMENT_INSURANCE_FEE)
-            {
-                UnemploymentInsuranceDeduction = COMPANY_MAX_UNEMPLOYEMENT_INSURANCE_FEE;
-            }
-
-            int totalInsurance = (SocialInsuranceDeduction + HealthInsuranceDeduction + UnemploymentInsuranceDeduction);
-            int netSalary = grossSalary + totalInsurance;
-
-            CompanyInsuranceDTO companyInsuranceDto = new CompanyInsuranceDTO
-            {
-                GrossSalary = grossSalary,
-                SocialInsurance = SocialInsuranceDeduction,
-                HealthInsurance = HealthInsuranceDeduction,
-                UnemploymentInsurance = UnemploymentInsuranceDeduction,
-                TotalInsurance = totalInsurance,
-                NetSalary = netSalary
-            };
-
-            return companyInsuranceDto;
-        }
+       
 
         public async Task<int> GetPaidByDate(int month, int year, int salary)
         {
