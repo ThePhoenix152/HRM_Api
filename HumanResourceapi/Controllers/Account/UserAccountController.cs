@@ -30,7 +30,11 @@ namespace HumanResourceapi.Controllers.Account
             {
                 if (user.Password.Equals(userLogin.Password))
                 {
-                    return Ok();
+                    string directPage = "";
+                    if (user.Roleid.Equals("HRM")) directPage = "HRM";
+                    if (user.Roleid.Equals("S")) directPage = "S";
+                    if (user.Roleid.Equals("HRS")) directPage = "HRS";
+                    return Ok(new {RedirectToPage = directPage});
                 }
                 else
                 {
