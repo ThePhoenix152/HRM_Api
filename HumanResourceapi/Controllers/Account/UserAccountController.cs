@@ -30,12 +30,14 @@ namespace HumanResourceapi.Controllers.Account
             {
                 if (user.Password.Equals(userLogin.Password))
                 {
-                    string directPage = "";
-                    if (user.Roleid == 1) directPage = "HRManager";
-                    else if (user.Roleid == 2) directPage = "HRStaff";
-                    else if (user.Roleid == 3) directPage = "Staff";
+                    var newUsersIn30Days = await _context.UserInfors.Where(c => c.HireDate <= DateTime.Now && c.HireDate >= DateTime.Now.AddDays(-30) && c.IsManager == false).CountAsync();
+                    var totalApplcationsIn30Days = await _context.LeaveApplications.Where(c => c.CreateAt <= DateTime.Now && c.CreateAt >= DateTime.Now.AddDays(-30)).CountAsync()
+                        + await _context.Otapplications.Where(c => c.CreateAt <= DateTime.Now && c.CreateAt >= DateTime.Now.AddDays(-30)).CountAsync();
+                    var totalAllowancesIn30Days = await _context.Payslips.Select(c => c.TotalAllowance).SumAsync();
+                    if (user.Roleid == 1) return Ok(new {RedirectToPage = "HRManager", NewUsersIn30Days = newUsersIn30Days, ApplicationsIn30Days = totalApplcationsIn30Days, AllowancesIn30Days = totalAllowancesIn30Days});
+                    else if (user.Roleid == 2) return Ok(new { RedirectToPage = "HRStaff", NewUsersIn30Days = newUsersIn30Days, ApplicationsIn30Days = totalApplcationsIn30Days, AllowancesIn30Days = totalAllowancesIn30Days });
+                    else if (user.Roleid == 3) return Ok(new { RedirectToPage = "Staff"});
                     else return BadRequest("Invalid role");
-                    return Ok(new {RedirectToPage = directPage});
                 }
                 else
                 {
