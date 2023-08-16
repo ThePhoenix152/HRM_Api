@@ -59,7 +59,7 @@ namespace HumanResourceapi.Services
                 return null;
             }
 
-            var (payslipDTO, result) = await GetPayslipCreationDtoOfStaff(
+            var payslipDTO = await GetPayslipCreationDtoOfStaff(
                 staffId, 
                 payslipInputCreationDto);
 
@@ -72,7 +72,7 @@ namespace HumanResourceapi.Services
 
             return payslipDTO;
         }
-        public async Task<(PayslipDTO, List<TaxDetailCreationDTO> taxDetailDTOs)> GetPayslipCreationDtoOfStaff(
+        public async Task<PayslipDTO> GetPayslipCreationDtoOfStaff(
                 int staffId,
                 PayslipInputCreationDto payslipInputCreationDto
             )
@@ -158,10 +158,6 @@ namespace HumanResourceapi.Services
                 TotalAllowance = allowancesSalary,
                 SalaryRecieved = actualNetSalary,
                 NetActualSalary = actualNetSalary,
-                Bhxhcomp = (int?)companyInsuranceDto.SocialInsurance,
-                Bhytcomp = (int?)companyInsuranceDto.HealthInsurance,
-                Bhtncomp = (int?)companyInsuranceDto.UnemploymentInsurance,
-                TotalCompInsured = (int?)companyInsuranceDto.TotalInsurance,
                 TotalCompPaid = actualCompPaid,
                 CreateAt = DateTime.UtcNow.AddHours(7),
                 ChangeAt = DateTime.UtcNow.AddHours(7),
@@ -183,7 +179,7 @@ namespace HumanResourceapi.Services
             await _context.SaveChangesAsync();
             var returnPayslip = _mapper.Map<PayslipDTO>(payslipEntity);
 
-            return (returnPayslip, result);
+            return (returnPayslip);
         }
 
         public async Task<int> TaxableIncomeCalculation(int salaryBeforeTax, int staffId)
