@@ -31,9 +31,9 @@ namespace HumanResourceapi.Controllers.Account
                 if (user.Password.Equals(userLogin.Password))
                 {
                     string directPage = "";
-                    if (user.Roleid.Equals("HRM")) directPage = "HRM";
-                    else if (user.Roleid.Equals("S")) directPage = "S";
-                    else if (user.Roleid.Equals("HRS")) directPage = "HRS";
+                    if (user.Roleid == 1) directPage = "HRManager";
+                    else if (user.Roleid == 2) directPage = "HRStaff";
+                    else if (user.Roleid == 3) directPage = "Staff";
                     else return BadRequest("Invalid role");
                     return Ok(new {RedirectToPage = directPage});
                 }
