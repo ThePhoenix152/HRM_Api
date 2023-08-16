@@ -118,13 +118,6 @@ namespace HumanResourceapi.Services
                 staffId,
                 payslipInputCreationDto.Month,
                 payslipInputCreationDto.Year);
-
-            //Tính bảo hiểm từng phần
-
-            //Thu nhập trước thuế (Tổng bảo hiểm cá nhân)
-            //Gross Actual Salary - total 
-
-
             // Giảm trừ gia cảnh
             int selfDeduction = PersonalTaxDeduction;
             int familyDeduction = await _personnelContractService.GetFamilyAllowance(staffId);
@@ -181,86 +174,6 @@ namespace HumanResourceapi.Services
 
             return (returnPayslip);
         }
-
-        public async Task<int> TaxableIncomeCalculation(int salaryBeforeTax, int staffId)
-        {
-
-            int noOfDependences = await _personnelContractService
-                                            .GetNoDependencies(staffId);
-
-            int FamilyTaxDeduction = FamilyAllowances * noOfDependences;
-
-            int TotalTaxDeduction = (PersonalTaxDeduction + FamilyTaxDeduction);
-
-            int taxableIncome = salaryBeforeTax - TotalTaxDeduction;
-
-            if (taxableIncome < 0) taxableIncome = 0;
-
-            return taxableIncome;
-        }
-
-        public static int CalculatePretaxEarning(InsuranceDTO Insurance, int actualGrossSalary)
-        {
-            var totalInsurance =
-                Insurance.SocialInsurance +
-                Insurance.HealthInsurance +
-                Insurance.UnemploymentInsurance;
-            return (int)(actualGrossSalary - totalInsurance);
-        }
-
-        (int, double)[] TaxableAmountAndTaxRate = {
-                (5000000, 0.05),
-                (5000000, 0.1),
-                (8000000, 0.15),
-                (14000000, 0.20),
-                (20000000, 0.25),
-                (28000000, 0.3),
-                (0, 0.35),
-            };
-
-        public List<TaxDetailCreationDTO> PersonalIncomeTaxCalculate(int ThuNhapChiuThue)
-        {
-            List<TaxDetailCreationDTO> result = new List<TaxDetailCreationDTO>();
-            int TaxRate = 0;
-            int i = 1;
-            foreach (var number in TaxableAmountAndTaxRate)
-            {
-                if (number.Item1 == 0)
-                {
-                    TaxRate = (int)(ThuNhapChiuThue * number.Item2);
-                }
-
-                else if (ThuNhapChiuThue >= number.Item1)
-                {
-                    TaxRate = (int)(number.Item1 * number.Item2);
-                }
-
-                else
-                {
-                    TaxRate = (int)(ThuNhapChiuThue * number.Item2);
-                }
-
-
-                if (ThuNhapChiuThue <= 0) TaxRate = 0;
-
-                result.Add(new TaxDetailCreationDTO
-                {
-                    TaxLevel = i,
-                    Amount = TaxRate
-                });
-
-
-                ThuNhapChiuThue -= number.Item1;
-                i++;
-            }
-            Console.WriteLine(result);
-
-
-            return result;
-        }
-
-       
-
         public async Task<int> GetPaidByDate(int month, int year, int salary)
         {
             var StandardWorkDays = await _context.TheCalendars
