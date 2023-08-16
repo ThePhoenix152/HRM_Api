@@ -28,21 +28,14 @@ namespace HumanResourceapi.DTOs.PayslipDTOs
 
         public int? OtTotal { get; set; }
 
-        public int? Bhxhemp { get; set; }
 
-        public int? Bhytemp { get; set; }
 
-        public int? Bhtnemp { get; set; }
 
         public int? SalaryBeforeTax { get; set; }
 
         public int? SelfDeduction { get; set; }
 
         public int? FamilyDeduction { get; set; }
-
-        public int? TaxableSalary { get; set; }
-
-        public int? PersonalIncomeTax { get; set; }
 
         public int? TotalAllowance { get; set; }
 
@@ -52,11 +45,8 @@ namespace HumanResourceapi.DTOs.PayslipDTOs
 
         public int? NetActualSalary { get; set; }
 
-        public int? Bhxhcomp { get; set; }
 
-        public int? Bhytcomp { get; set; }
 
-        public int? Bhtncomp { get; set; }
 
         public int? TotalCompInsured { get; set; }
 
@@ -78,6 +68,5 @@ namespace HumanResourceapi.DTOs.PayslipDTOs
 
         public virtual StaffInfoDto Staff { get; set; } = null!;
 
-        public virtual ICollection<TaxDetailDTO> TaxDetails { get; set; } = new List<TaxDetailDTO>();
     }
 }

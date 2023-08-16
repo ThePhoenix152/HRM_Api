@@ -23,15 +23,12 @@ public partial class Payslip
 
     public int? OtTotal { get; set; }
 
-    public int? SalaryBeforeTax { get; set; }
 
     public int? SelfDeduction { get; set; }
 
     public int? FamilyDeduction { get; set; }
 
-    public int? TaxableSalary { get; set; }
 
-    public int? PersonalIncomeTax { get; set; }
 
     public int? TotalAllowance { get; set; }
 

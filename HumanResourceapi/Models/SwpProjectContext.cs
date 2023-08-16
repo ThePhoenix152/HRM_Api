@@ -282,8 +282,6 @@ public partial class SwpProjectContext : DbContext
             entity.Property(e => e.Payday)
                 .HasColumnType("datetime")
                 .HasColumnName("payday");
-            entity.Property(e => e.PersonalIncomeTax).HasColumnName("personalIncomeTax");
-            entity.Property(e => e.SalaryBeforeTax).HasColumnName("salaryBeforeTax");
             entity.Property(e => e.SalaryRecieved).HasColumnName("salaryRecieved");
             entity.Property(e => e.SelfDeduction).HasColumnName("selfDeduction");
             entity.Property(e => e.StaffId).HasColumnName("staffId");
@@ -291,7 +289,6 @@ public partial class SwpProjectContext : DbContext
             entity.Property(e => e.Status)
                 .HasMaxLength(25)
                 .HasColumnName("status");
-            entity.Property(e => e.TaxableSalary).HasColumnName("taxableSalary");
             entity.Property(e => e.TotalAllowance).HasColumnName("totalAllowance");
             entity.Property(e => e.TotalCompInsured).HasColumnName("totalCompInsured");
             entity.Property(e => e.TotalCompPaid).HasColumnName("totalCompPaid");
